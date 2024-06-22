@@ -1,6 +1,7 @@
 import {
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Icon,
   Input,
@@ -30,16 +31,21 @@ const MintPage: FC = () => {
     handleSubmit,
     register,
     setValue,
-    watch,
+    clearErrors,
+    setError,
     formState: { errors },
   } = useForm<MintForm>();
-
-  const watchFile = watch("file");
 
   const toast = useToast();
   const navigate = useNavigate();
 
+  console.log(errors);
+
   const onSubmit = handleSubmit((data) => {
+    if (!data.file) {
+      setError("file", { message: "This field is required" });
+      return;
+    }
     console.log(data);
     toast({
       colorScheme: "purple",
@@ -68,15 +74,24 @@ const MintPage: FC = () => {
         spacing="48px"
         minW="300px"
       >
-        <SingleUploadImage
-          w={{ base: "100%", lg: "40%" }}
-          h={{ base: "100px", lg: "100%" }}
-          bg="blackAlpha.500"
-          _hover={{ bg: "gray.900" }}
-          transition="0.5s"
-          borderRadius="12px"
-          onUpdateFile={(file: File) => setValue("file", file)}
-        />
+        <FormControl isInvalid={!!errors.file}>
+          <SingleUploadImage
+            w="100%"
+            h={{ base: "100px", lg: "100%" }}
+            bg="blackAlpha.500"
+            _hover={{ bg: "gray.900" }}
+            border={errors.file ? "1px solid red" : undefined}
+            transition="0.5s"
+            borderRadius="12px"
+            onUpdateFile={(file: File) => {
+              setValue("file", file);
+              clearErrors("file");
+            }}
+          />
+          {errors.file && (
+            <FormErrorMessage>An image is required</FormErrorMessage>
+          )}
+        </FormControl>
         <chakra.form onSubmit={onSubmit} w="100%" h="100%">
           <VStack w="100%" justify="space-between" h="100%">
             <VStack maxW="800px" w="100%" spacing="24px">
@@ -89,6 +104,9 @@ const MintPage: FC = () => {
                   boxShadow="lg"
                   border={`1px solid ${colors.gray[700]}`}
                 />
+                {errors.name && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </FormControl>
               <FormControl isInvalid={!!errors.description}>
                 <FormLabel color="gray.600">Description</FormLabel>
@@ -99,6 +117,9 @@ const MintPage: FC = () => {
                   boxShadow="lg"
                   border={`1px solid ${colors.gray[700]}`}
                 />
+                {errors.description && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </FormControl>
               <FormControl isInvalid={!!errors.supply}>
                 <FormLabel color="gray.600">Supply</FormLabel>
@@ -111,10 +132,12 @@ const MintPage: FC = () => {
                   type="number"
                   border={`1px solid ${colors.gray[700]}`}
                 />
+                {errors.supply && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </FormControl>
             </VStack>
             <Button
-              isDisabled={!watchFile}
               type="submit"
               p="64px"
               fontWeight="black"

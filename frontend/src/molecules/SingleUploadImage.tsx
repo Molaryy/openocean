@@ -50,7 +50,11 @@ const SingleUploadImage: FC<SingleUploadImageProps & CenterProps> = ({
         </ScaleFade>
       ) : (
         <Center position="absolute" w="100%" h="100%" transition="0.5s">
-          <VStack fontSize="24px" color="gray.300">
+          <VStack
+            fontSize={{ base: "16px", lg: "24px" }}
+            color="gray.300"
+            spacing={0}
+          >
             <Icon as={MdAdd} />
             <Text>Upload</Text>
           </VStack>
