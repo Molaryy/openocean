@@ -6,6 +6,7 @@ import Home from "./pages";
 import StatsPage from "./pages/Stats";
 import NftPage from "./pages/Nfts";
 import CollectionsPage from "./pages/Collections";
+import MintPage from "./pages/Mint";
 
 function App() {
   const router = createBrowserRouter([
@@ -37,6 +38,11 @@ function App() {
         {
           path: "/stats",
           element: <StatsPage />,
+        },
+
+        {
+          path: "/mint",
+          element: <MintPage />,
         },
         {
           path: "/nfts",
