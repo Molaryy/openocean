@@ -7,6 +7,7 @@ import {
   Table,
   TableContainer,
   Tabs,
+  Tbody,
   Td,
   Text,
   Th,
@@ -77,36 +78,38 @@ const StatsPage: FC = () => {
               <Th />
             </Tr>
           </Thead>
-          {filteredStats.map((stat, idx) => (
-            <Tr
-              role="group"
-              color="gray.500"
-              _hover={{ color: "gray.300" }}
-              transition="0.6s"
-              key={stat.name}
-            >
-              <Td>{++idx}</Td>
-              <Td>
-                <HStack cursor="pointer">
-                  <Box w="45px" h="45x">
-                    <NFTCard ratio={1} url={stat.img} />
-                  </Box>
-                  <Text fontWeight="semibold" color="inherit">
-                    {stat.name}
-                  </Text>
-                </HStack>
-              </Td>
-              <Td>{stat.volume}</Td>
-              <Td>{displayGnot(stat.price)}</Td>
-              <Td>{stat.sales}</Td>
-              <Td>
-                <Icon
-                  as={stat.starred ? ImStarFull : ImStarEmpty}
-                  cursor="pointer"
-                />
-              </Td>
-            </Tr>
-          ))}
+          <Tbody>
+            {filteredStats.map((stat, idx) => (
+              <Tr
+                role="group"
+                color="gray.500"
+                _hover={{ color: "gray.300" }}
+                transition="0.6s"
+                key={stat.name}
+              >
+                <Td>{++idx}</Td>
+                <Td>
+                  <HStack cursor="pointer">
+                    <Box w="45px" h="45x">
+                      <NFTCard ratio={1} url={stat.img} />
+                    </Box>
+                    <Text fontWeight="semibold" color="inherit">
+                      {stat.name}
+                    </Text>
+                  </HStack>
+                </Td>
+                <Td>{stat.volume}</Td>
+                <Td>{displayGnot(stat.price)}</Td>
+                <Td>{stat.sales}</Td>
+                <Td>
+                  <Icon
+                    as={stat.starred ? ImStarFull : ImStarEmpty}
+                    cursor="pointer"
+                  />
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
         </Table>
       </TableContainer>
     </VStack>

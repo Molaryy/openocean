@@ -7,34 +7,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import NFTCard from "../atoms/NFTCard";
-import { displayGnot } from "../utils";
+import NFTCard from "../../atoms/NFTCard";
+import { displayGnot } from "../../utils";
+import data from "./data";
+import { useNavigate } from "react-router-dom";
 
 const NftPage: FC = () => {
-  const nfts = [
-    {
-      name: "NFT 1",
-      image:
-        "https://i.seadn.io/gcs/files/a07fdcc050dbff6b337afec68d7eee37.png?auto=format&dpr=1&h=500",
-      price: "0.1",
-      owner: "0x1234",
-    },
-    {
-      name: "NFT 2",
-      image:
-        "https://i.seadn.io/gcs/files/25059d629ad50cad3009a1f553a44401.jpg?auto=format&dpr=1&h=500&fr=1",
-      price: "0.2",
-      owner: "0x5678",
-    },
-
-    {
-      name: "NFT 3",
-      image:
-        "https://i.seadn.io/s/raw/files/244ed6dd289a6ab8c971941096467637.gif?auto=format&dpr=1&h=500",
-      price: "0.2",
-      owner: "0x5678",
-    },
-  ];
+  const navigate = useNavigate();
 
   return (
     <VStack align="start" w="100%" h="100%" spacing="12px">
@@ -42,8 +21,9 @@ const NftPage: FC = () => {
         NFTs
       </Text>
       <SimpleGrid w="100%" gap="24px" columns={5}>
-        {nfts.map((nft) => (
+        {data.map((nft) => (
           <Card
+            onClick={() => navigate(`/nfts/${nft.id}`)}
             cursor="pointer"
             role="group"
             gap="12px"

@@ -44,6 +44,18 @@ const theme = extendTheme({
     body: "Whyte, sans-serif",
   },
   components: {
+    Table: {
+      variants: {
+        simple: {
+          th: {
+            borderColor: "gray.700",
+          },
+          td: {
+            borderColor: "gray.800",
+          },
+        },
+      },
+    },
     Text: {
       baseStyle: {
         color: "gray.50",

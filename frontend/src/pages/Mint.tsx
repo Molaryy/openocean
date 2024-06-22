@@ -78,6 +78,7 @@ const MintPage: FC = () => {
           <SingleUploadImage
             w="100%"
             h={{ base: "100px", lg: "100%" }}
+            maxH="70vh"
             bg="blackAlpha.500"
             _hover={{ bg: "gray.900" }}
             border={errors.file ? "1px solid red" : undefined}

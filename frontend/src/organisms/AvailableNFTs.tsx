@@ -2,42 +2,21 @@ import { HStack, Box } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { FC } from "react";
 import NFTCard from "../atoms/NFTCard";
+import { useNavigate } from "react-router-dom";
+import data from "../pages/nfts/data";
 
 const AvailableNFTs: FC = () => {
-  const nfts = [
-    {
-      name: "NFT 1",
-      image:
-        "https://i.seadn.io/gcs/files/a07fdcc050dbff6b337afec68d7eee37.png?auto=format&dpr=1&h=500",
-      price: "0.1",
-      owner: "0x1234",
-    },
-    {
-      name: "NFT 2",
-      image:
-        "https://i.seadn.io/gcs/files/25059d629ad50cad3009a1f553a44401.jpg?auto=format&dpr=1&h=500&fr=1",
-      price: "0.2",
-      owner: "0x5678",
-    },
-
-    {
-      name: "NFT 3",
-      image:
-        "https://i.seadn.io/s/raw/files/244ed6dd289a6ab8c971941096467637.gif?auto=format&dpr=1&h=500",
-      price: "0.2",
-      owner: "0x5678",
-    },
-  ];
-  const duplicatedNfts = [...nfts, ...nfts];
-
+  const duplicatedNfts = [...data, ...data];
   const nftWidth = 33;
+
+  const navigate = useNavigate();
 
   return (
     <HStack overflowX="hidden" w="100%">
       <motion.div
         style={{ display: "flex" }}
         animate={{
-          x: [`-${nftWidth * nfts.length}vw`, "0px"],
+          x: [`-${nftWidth * data.length}vw`, "0px"],
           transition: {
             ease: "linear",
             duration: 20,
@@ -48,6 +27,7 @@ const AvailableNFTs: FC = () => {
         {duplicatedNfts.map((nft) => (
           <Box
             cursor="pointer"
+            onClick={() => navigate(`/nfts/${nft.id}`)}
             key={nft.name}
             w={`${nftWidth}vw`}
             px="24px"
