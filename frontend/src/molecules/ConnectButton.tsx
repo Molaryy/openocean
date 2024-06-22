@@ -43,6 +43,7 @@ const WalletButton: FC = () => {
       await fetchBalance();
 
       toast({
+        colorScheme: "purple",
         title: "Connected to Adena",
         description: `Connected to ${info.address}`,
         status: "success",
@@ -68,11 +69,14 @@ const WalletButton: FC = () => {
       borderRadius="16px"
       border="1px solid gray"
       px="12px"
-      color="white"
+      _hover={{ background: "gray.800" }}
+      transition="1s"
       divider={<StackDivider />}
     >
       {!!accountInfo && <Text>{displayBalance(ugnots)}</Text>}
       <Button
+        _hover={{ color: "purple.100" }}
+        color="purple.200"
         onClick={handleWalletConnect}
         isLoading={isLoading}
         isDisabled={!!accountInfo}

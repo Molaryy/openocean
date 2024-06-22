@@ -2,7 +2,8 @@ import Header from "./organisms/Header";
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import theme, { colors } from "./theme";
 import { ChakraProvider, VStack } from "@chakra-ui/react";
-import Home from "./pages/Home";
+import Home from "./pages";
+import Stats from "./pages/Stats";
 
 function App() {
   const router = createBrowserRouter([
@@ -14,13 +15,26 @@ function App() {
           bg={`linear-gradient(180deg, ${colors.gray[900]}, ${colors.gray[700]})`}
         >
           <Header />
-          <Outlet />
+          <VStack
+            overflowY="scroll"
+            w="100%"
+            h="100%"
+            px="84px"
+            py="32px"
+            spacing="48px"
+          >
+            <Outlet />
+          </VStack>
         </VStack>
       ),
       children: [
         {
           path: "/",
           element: <Home />,
+        },
+        {
+          path: "/stats",
+          element: <Stats />,
         },
       ],
     },
