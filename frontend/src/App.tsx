@@ -4,6 +4,8 @@ import theme, { colors } from "./theme";
 import { ChakraProvider, VStack } from "@chakra-ui/react";
 import Home from "./pages";
 import StatsPage from "./pages/Stats";
+import NftPage from "./pages/Nfts";
+import CollectionsPage from "./pages/Collections";
 
 function App() {
   const router = createBrowserRouter([
@@ -35,6 +37,14 @@ function App() {
         {
           path: "/stats",
           element: <StatsPage />,
+        },
+        {
+          path: "/nfts",
+          element: <NftPage />,
+        },
+        {
+          path: "/collections",
+          element: <CollectionsPage />,
         },
       ],
     },

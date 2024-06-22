@@ -1,7 +1,6 @@
-import { HStack, Box, VStack } from "@chakra-ui/react";
+import { HStack, Box } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { FC } from "react";
-import SectionTitle from "../molecules/SectionTitle";
 import NFTCard from "../atoms/NFTCard";
 
 const AvailableNFTs: FC = () => {
@@ -34,34 +33,31 @@ const AvailableNFTs: FC = () => {
   const nftWidth = 33;
 
   return (
-    <VStack align="start" w="100%" h="100%" spacing="24px">
-      <SectionTitle title="Available NFTs" onClick={() => {}} />
-      <HStack overflowX="hidden" w="100%">
-        <motion.div
-          style={{ display: "flex" }}
-          animate={{
-            x: [`-${nftWidth * nfts.length}vw`, "0px"],
-            transition: {
-              ease: "linear",
-              duration: 20,
-              repeat: Infinity,
-            },
-          }}
-        >
-          {duplicatedNfts.map((nft) => (
-            <Box
-              cursor="pointer"
-              key={nft.name}
-              w={`${nftWidth}vw`}
-              px="24px"
-              flexShrink={0}
-            >
-              <NFTCard url={nft.image} />
-            </Box>
-          ))}
-        </motion.div>
-      </HStack>
-    </VStack>
+    <HStack overflowX="hidden" w="100%">
+      <motion.div
+        style={{ display: "flex" }}
+        animate={{
+          x: [`-${nftWidth * nfts.length}vw`, "0px"],
+          transition: {
+            ease: "linear",
+            duration: 20,
+            repeat: Infinity,
+          },
+        }}
+      >
+        {duplicatedNfts.map((nft) => (
+          <Box
+            cursor="pointer"
+            key={nft.name}
+            w={`${nftWidth}vw`}
+            px="24px"
+            flexShrink={0}
+          >
+            <NFTCard url={nft.image} />
+          </Box>
+        ))}
+      </motion.div>
+    </HStack>
   );
 };
 
