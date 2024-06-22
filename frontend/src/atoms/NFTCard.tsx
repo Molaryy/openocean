@@ -1,10 +1,16 @@
 import { AspectRatio, Box } from "@chakra-ui/react";
 import { FC } from "react";
 
-const NFTCard: FC<{ url: string }> = ({ url }) => (
-  <AspectRatio ratio={16 / 9} w="100%" h="100%">
+const NFTCard: FC<{ url: string; ratio?: number }> = ({
+  url,
+  ratio = 16 / 9,
+}) => (
+  <AspectRatio ratio={ratio} w="100%" h="100%">
     <Box
       transitionDuration="0.5s"
+      _groupHover={{
+        opacity: "1",
+      }}
       _hover={{
         opacity: "1",
       }}

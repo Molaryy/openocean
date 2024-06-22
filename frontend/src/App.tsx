@@ -3,7 +3,7 @@ import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import theme, { colors } from "./theme";
 import { ChakraProvider, VStack } from "@chakra-ui/react";
 import Home from "./pages";
-import Stats from "./pages/Stats";
+import StatsPage from "./pages/Stats";
 
 function App() {
   const router = createBrowserRouter([
@@ -34,7 +34,7 @@ function App() {
         },
         {
           path: "/stats",
-          element: <Stats />,
+          element: <StatsPage />,
         },
       ],
     },
