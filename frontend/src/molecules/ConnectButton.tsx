@@ -1,32 +1,27 @@
 import { HStack, StackDivider, Button, useToast, Text } from "@chakra-ui/react";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { AdenaService } from "../services/adena/adena";
 import { IAccountInfo } from "../services/adena/adena.types";
 import { constants } from "../constants";
 import { useAccountStore } from "../store";
+import { displayBalance } from "../utils";
 
 const WalletButton: FC = () => {
   const toast = useToast();
-  const { setChainID, setAddress, address } = useAccountStore();
+  const { setChainID, setAddress } = useAccountStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const isConnected = useMemo(
-    () => !!address && "adena" in window && !!window.adena,
-    [address]
-  );
 
   const [accountInfo, setAccountInfo] = useState<IAccountInfo | null>(null);
 
-  useEffect(() => {
-    if (!isConnected) return;
+  const fetchBalance = async () => {
+    const accountInfo = await AdenaService.getAccountInfo();
+    setAccountInfo(accountInfo);
+  };
 
-    const fetchBalance = async () => {
-      const accountInfo = await AdenaService.getAccountInfo();
-      setAccountInfo(accountInfo);
-    };
-
-    fetchBalance();
-  }, [isConnected]);
+  const ugnots = useMemo<number>(() => {
+    if (!accountInfo) return 0;
+    return +accountInfo.coins.split("u")[0];
+  }, [accountInfo]);
 
   const handleWalletConnect = async () => {
     setIsLoading(true);
@@ -44,6 +39,8 @@ const WalletButton: FC = () => {
       // Update the account context
       setAddress(info.address);
       setChainID(constants.chainID);
+
+      await fetchBalance();
 
       toast({
         title: "Connected to Adena",
@@ -74,11 +71,11 @@ const WalletButton: FC = () => {
       color="white"
       divider={<StackDivider />}
     >
-      {!!isConnected && <Text>{accountInfo?.coins}</Text>}
+      {!!accountInfo && <Text>{displayBalance(ugnots)}</Text>}
       <Button
         onClick={handleWalletConnect}
         isLoading={isLoading}
-        isDisabled={isConnected}
+        isDisabled={!!accountInfo}
       >{`{ wallet }`}</Button>
     </HStack>
   );

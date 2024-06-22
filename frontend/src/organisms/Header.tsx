@@ -18,14 +18,14 @@ const Header: FC = () => (
   >
     <HomeButton />
     <WalletButton />
-    <HStack spacing="12px">
+    <HStack spacing="24px">
       <Button flexDir="column" variant="primary">
-        <Icon as={GiGoldBar} fontSize="24px" />
-        <span style={{ fontSize: "12px" }}>Mint</span>
+        <Icon as={GiGoldBar} fontSize="32px" />
+        <span style={{ fontSize: "14px" }}>Mint</span>
       </Button>
       <Button flexDir="column" variant="primary">
-        <Icon as={MdOutlineBarChart} fontSize="24px" />
-        <span style={{ fontSize: "12px" }}>Stats</span>
+        <Icon as={MdOutlineBarChart} fontSize="32px" />
+        <span style={{ fontSize: "14px" }}>Stats</span>
       </Button>
     </HStack>
   </HStack>

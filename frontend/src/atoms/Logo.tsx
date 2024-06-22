@@ -1,14 +1,14 @@
-import { HStack, Icon, Text } from "@chakra-ui/react";
+import { Icon, Text, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { BsEasel } from "react-icons/bs";
 
 const Logo: FC = () => (
-  <HStack>
+  <VStack spacing={0}>
     <Icon as={BsEasel} fontSize="24px" color="purple.200" />
     <Text color="purple.200" fontFamily="heading" fontWeight="semibold">
       OpenOcean
     </Text>
-  </HStack>
+  </VStack>
 );
 
 export default Logo;
