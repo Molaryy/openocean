@@ -3,7 +3,7 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import theme, { colors } from "./theme";
 import { ChakraProvider, VStack } from "@chakra-ui/react";
 import Home from "./pages";
-import StatsPage from "./pages/Stats";
+import StatsPage from "./pages/stats";
 import NftPage from "./pages/nfts";
 import CollectionsPage from "./pages/Collections";
 import MintPage from "./pages/Mint";

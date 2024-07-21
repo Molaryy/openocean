@@ -15,7 +15,7 @@ type Collection struct {
 	description string
 	logo string // ipfs path
 	avaiableTokens int
-	owners avl.Tree
+	owners *avl.Tree
 	nfts avl.Tree
 }
 
@@ -182,17 +182,17 @@ func CreateCollection(
 	if addrOwner.IsValid() == false {
 		return nil, errors.New("Invalid owner address")
 	}
-	for i := range avaiableTokens {
-		idN := ufmt.Sprintf("%v", idNft)
+	ufmt.Println("Available tokens: ", avaiableTokens)
+	for range avaiableTokens {
+		idN := ufmt.Sprintf("%d", idNft)
 		tkn, err := InitToken(addrOwner, idN)
 		if err != nil {
 			panic(err)
 		}
 		nfts.Set(idN, tkn)
 		idNft++
-		i++
 	}
-	idClt := ufmt.Sprintf("%d", collectionCounter)
+	idClt := ufmt.Sprintf("%v", collectionCounter)
 	collectionCounter++
 	return &Collection{
 		id: idClt,
@@ -202,6 +202,7 @@ func CreateCollection(
 		description: description,
 		logo: logo,
 		avaiableTokens: avaiableTokens,
+		owners: avl.NewTree(),
 		nfts: nfts,
 	}, nil
 }
