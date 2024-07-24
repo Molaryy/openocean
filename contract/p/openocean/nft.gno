@@ -19,6 +19,14 @@ func (n *NFTtoken721) GetId() string {
 	return n.id
 }
 
+func (n *NFTtoken721) SetOwner(owner std.Address) bool {
+	if owner.IsValid() == false {
+		return false
+	}
+	n.owner = owner
+	return true
+}
+
 func (n *NFTtoken721) GetOwner() std.Address {
 	return n.owner
 }
@@ -67,7 +75,7 @@ func (n *NFTtoken721) Mint(
 	encoded, err := json.Marshal(nftJson)
 
 	if err != nil {
-		panic(ufmt.Errorf("error: %v", err))
+		panic(err)
 	}
 	n.metadata = string(encoded)
 	n.isMinted = true

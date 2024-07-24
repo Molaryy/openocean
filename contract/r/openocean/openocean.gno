@@ -1,4 +1,4 @@
-package openocean
+package openr
 
 import (
 	"std"
@@ -8,24 +8,20 @@ import (
 	"gno.land/p/demo/json"
 )
 
+
 var (
-	collections avl.Tree
+	collections *avl.Tree
+	collectionCounter int
+	nftID int
 )
 
-func MintToCollectionID(
-	id string,
-	name string,
-	ipfsUrl string,
-	description string,
-) bool {
-	clt := openocean.GetCollectionByID(collections, id)
-
-	if clt == nil {
-		return false
-	}
-	clt.Mint(name, ipfsUrl, description, clt.GetOwner())
-	return true
+func init() {
+	collections = avl.NewTree()
+	nftID = 0
+	collectionCounter = 0
 }
+
+var count int
 
 func AddCollection(
 	name string,
@@ -36,6 +32,8 @@ func AddCollection(
 	avaiableNfts int,
 ) {
 	clt, err := openocean.CreateCollection(
+		collectionCounter,
+		&nftID,
 		name,
 		symbol,
 		addrOwner,
@@ -43,24 +41,27 @@ func AddCollection(
 		logo,
 		avaiableNfts,
 	)
-	if err != nil || clt == nil {
+	if clt == nil || err != nil {
 		panic(err)
 	}
 	id := clt.GetId()
     collections.Set(id, clt)
 	ufmt.Println("Collection: (", id, ") created successfully!")
+	collectionCounter++
 }
+
 
 func GetCollections() string {
 	cltsJson := json.ObjectNode("", map[string]*json.Node{})
 
 
 	collections.Iterate("", "", func (id string, value interface{}) bool {
+		ufmt.Println("Collection ID: ", id)
 		clt := value.(*openocean.Collection)
 		if clt == nil {
 			return true
 		}
-		var nfts avl.Tree = clt.GetNFTS()
+		nfts := clt.GetNFTS()
 		cltField := json.ObjectNode("", map[string]*json.Node{
 			"id": json.StringNode("id", clt.GetId()),
 			"logo": json.StringNode("logo", clt.GetLogo()),
@@ -79,13 +80,13 @@ func GetCollections() string {
 			cltField.AppendObject("nft", nftField)
 			return false
 		})
-		cltsJson.AppendArray(cltField)
+		cltsJson.AppendObject("", cltField)
 		return false
 	})
 	encoded, err := json.Marshal(cltsJson)
 
 	if err != nil {
-		panic(ufmt.Errorf("error: %v", err))
+		panic(err)
 	}
 	return string(encoded)
 }
@@ -106,23 +107,5 @@ func MintInCollectionById(
 }
 
 func Render(path string) string {
-	str := ""
-
-	collections.Iterate("", "", func(id string, value interface{}) bool {
-		clt := value.(*openocean.Collection)
-		str += "### Collection"
-		str += "<br/>"
-		str += "<img src=\"" + clt.GetLogo() + "\" alt=\"drawing\" width=\"200\" style=\"border-radius:50%;width:40px;height:40px\"/>"
-		str += "<br/>"
-		str += "**ID**: " + clt.GetId()
-		str += "<br/>"
-		str += "**Owner**: " + clt.GetOwner().String()
-		str += "<br/>"
-		str += "**Description**: \"" + clt.GetDescription() + "\""
-		str += "<br/>"
-		str += "<br/>"
-		str += "---"
-		return false
-	})
-	return str
+	return GetCollections()
 }

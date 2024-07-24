@@ -16,26 +16,16 @@ type Collection struct {
 	logo string // ipfs path
 	avaiableTokens int
 	owners *avl.Tree
-	nfts avl.Tree
+	nfts *avl.Tree
 }
 
-var (
-	idNft int
-	collectionCounter int
-)
-
-func init() {
-	idNft = 0
-	collectionCounter = 0
-}
-
-func (n *Collection) BalanceOf(owner std.Address) (uint64, bool) {
+func (c *Collection) BalanceOf(owner std.Address) (uint64, bool) {
 	var blc uint64 = 0
 
-	n.nfts.Iterate("", "", func (id string, value interface{}) bool {
+	c.nfts.Iterate("", "", func (id string, value interface{}) bool {
 		nft := value.(*NFTtoken721)
 		if nft.GetOwner() == owner {
-			blc++
+			blc += 1
 		}
 		return false
 	})
@@ -45,11 +35,11 @@ func (n *Collection) BalanceOf(owner std.Address) (uint64, bool) {
 	return blc, false
 }
 
-func (n *Collection) OwnerOf(tokenId string) (std.Address, bool) {
+func (c *Collection) OwnerOf(tokenId string) (std.Address, bool) {
 	var owner std.Address
 	found := false
 
-	n.nfts.Iterate("", "", func (id string, value interface{}) bool {
+	c.nfts.Iterate("", "", func (id string, value interface{}) bool {
 		nft := value.(*NFTtoken721)
 		if tokenId == id {
 			owner = nft.GetOwner()
@@ -61,24 +51,38 @@ func (n *Collection) OwnerOf(tokenId string) (std.Address, bool) {
 	return owner, found
 }
 
-func (n *Collection) SafeTransferFrom(
+func (c *Collection) SafeTransferFrom(
 	from std.Address,
 	to std.Address,
-	tokenId int,
+	tokenId string,
 )  {
-	// TODO
+	c.nfts.Iterate("", "", func (id string, value interface{}) bool {
+		nft := value.(*NFTtoken721)
+		if tokenId == id {
+			nft.SetOwner(to)
+			return true
+		}
+		return false
+	})
 }
 
-func (n *Collection) SafeTransferFromWithData(
+func (c *Collection) SafeTransferFromWithData(
 	from std.Address,
 	to std.Address,
 	tokenId int,
 	data string,
 ) {
-	// TODO
+	c.nfts.Iterate("", "", func (id string, value interface{}) bool {
+		nft := value.(*NFTtoken721)
+		if tokenId == id {
+			nft.SetOwner(to)
+			return true
+		}
+		return false
+	})
 }
 
-func (n *Collection) TransferFrom(
+func (c *Collection) TransferFrom(
 	from std.Address,
 	to std.Address,
 	tokenId int,
@@ -86,19 +90,19 @@ func (n *Collection) TransferFrom(
 	// TODO
 }
 
-func (n *Collection) Approve(to std.Address, tokenId int) {
+func (c *Collection) Approve(to std.Address, tokenId int) {
 	// TODO
 }
 
-func (n *Collection) GetApproved(tokenId int) {
+func (c *Collection) GetApproved(tokenId int) {
 	// TODO
 }
 
-func (n *Collection) SetApprovalForAll(operator std.Address, _approved std.Address) {
+func (c *Collection) SetApprovalForAll(operator std.Address, _approved std.Address) {
 	// TODO
 }
 
-func (n *Collection) IsApprovedForAll(owner std.Address, operator std.Address) {
+func (c *Collection) IsApprovedForAll(owner std.Address, operator std.Address) {
 	// TODO
 }
 
@@ -118,7 +122,7 @@ func (c *Collection) GetLogo() string {
 	return c.logo
 }
 
-func (c *Collection) GetNFTS() avl.Tree {
+func (c *Collection) GetNFTS() *avl.Tree {
 	return c.nfts
 }
 
@@ -159,7 +163,7 @@ func (c *Collection) Mint(
 	return true
 }
 
-func GetCollectionByID(clts avl.Tree, idToFind string) *Collection {
+func GetCollectionByID(clts *avl.Tree, idToFind string) *Collection {
 	value, exists := clts.Get(idToFind)
 
 	if exists == false {
@@ -170,6 +174,8 @@ func GetCollectionByID(clts avl.Tree, idToFind string) *Collection {
 }
 
 func CreateCollection(
+	collectionCounter int,
+	nftID *int,
 	name string,
 	symbol string,
 	addrOwner std.Address,
@@ -177,24 +183,25 @@ func CreateCollection(
 	logo string,
 	avaiableTokens int,
 ) (*Collection, error) {
-	var nfts avl.Tree
+	var nfts *avl.Tree = avl.NewTree()
+	var owners *avl.Tree = avl.NewTree()
 
 	if addrOwner.IsValid() == false {
 		return nil, errors.New("Invalid owner address")
 	}
 	ufmt.Println("Available tokens: ", avaiableTokens)
-	for range avaiableTokens {
-		idN := ufmt.Sprintf("%d", idNft)
-		tkn, err := InitToken(addrOwner, idN)
+	for i := 0; i < avaiableTokens; i += 1 {
+		idStr := ufmt.Sprintf("%d", *nftID)
+		tkn, err := InitToken(addrOwner, idStr)
 		if err != nil {
 			panic(err)
 		}
-		nfts.Set(idN, tkn)
-		idNft++
+		nfts.Set(tkn.GetId(), tkn)
+		owners.Set(tkn.GetId(), addrOwner)
+		*nftID += 1
 	}
-	idClt := ufmt.Sprintf("%v", collectionCounter)
-	collectionCounter++
-	return &Collection{
+	idClt := ufmt.Sprintf("%d", collectionCounter)
+	clt := &Collection{
 		id: idClt,
 		name: name,
 		symbol: symbol,
@@ -202,7 +209,8 @@ func CreateCollection(
 		description: description,
 		logo: logo,
 		avaiableTokens: avaiableTokens,
-		owners: avl.NewTree(),
+		owners: owners,
 		nfts: nfts,
-	}, nil
+	}
+	return clt, nil
 }
