@@ -69,7 +69,7 @@ func (c *Collection) SafeTransferFrom(
 func (c *Collection) SafeTransferFromWithData(
 	from std.Address,
 	to std.Address,
-	tokenId int,
+	tokenId string,
 	data string,
 ) {
 	c.nfts.Iterate("", "", func (id string, value interface{}) bool {
