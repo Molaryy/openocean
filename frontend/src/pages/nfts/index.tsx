@@ -8,12 +8,14 @@ import {
 } from "@chakra-ui/react";
 import { FC } from "react";
 import NFTCard from "../../atoms/NFTCard";
-import { displayGnot } from "../../utils";
-import data from "./data";
+// import { displayGnot } from "../../utils";
 import { useNavigate } from "react-router-dom";
+import useGetAllNFTs from "../../hooks/useGetAllNFTs";
 
 const NftPage: FC = () => {
   const navigate = useNavigate();
+
+  const { nfts } = useGetAllNFTs();
 
   return (
     <VStack align="start" w="100%" h="100%" spacing="12px">
@@ -21,7 +23,7 @@ const NftPage: FC = () => {
         NFTs
       </Text>
       <SimpleGrid w="100%" gap="24px" columns={5}>
-        {data.map((nft) => (
+        {nfts.map((nft) => (
           <Card
             onClick={() => navigate(`/nfts/${nft.id}`)}
             cursor="pointer"
@@ -32,12 +34,12 @@ const NftPage: FC = () => {
             p="12px"
           >
             <Text textAlign="center" color="gray.300" fontWeight="bold">
-              {nft.name}
+              {nft.metadata?.name}
             </Text>
             <Divider w="50%" mx="auto" />
-            <NFTCard key={nft.name} url={nft.image} />
+            <NFTCard key={nft.id} url={nft.metadata?.ipfsUrl} />
             <HStack w="100%" justify="space-between">
-              <Text color="gray.500">{displayGnot(+nft.price)}</Text>
+              {/* <Text color="gray.500">{displayGnot(+nft.price)}</Text> */}
             </HStack>
           </Card>
         ))}

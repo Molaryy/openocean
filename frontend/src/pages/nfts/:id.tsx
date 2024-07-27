@@ -1,25 +1,28 @@
 import { Box, Card, HStack, Text, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import NFTCard from "../../atoms/NFTCard";
-import data from "./data";
 import { useParams } from "react-router-dom";
 import { colors } from "../../theme";
-import NFTTransactions from "../../organisms/NFTTransactions";
+// import NFTTransactions from "../../organisms/NFTTransactions";
 import NFTDetails from "../../organisms/NFTDetails";
+import useGetAllNFTs from "../../hooks/useGetAllNFTs";
 
 const NftDetailsPage: FC = () => {
   const { id } = useParams();
 
-  const nft = data[+(id as string)];
+  const { nfts } = useGetAllNFTs();
+  const nft = nfts.find((nft) => nft.id === id);
+
+  if (!nft) return nft;
 
   return (
     <VStack w="100%" align="start" p="16px">
       <Text userSelect="none" fontSize="32px">
-        {nft.name}
+        {nft.metadata?.name}
       </Text>
       <HStack spacing="24px" align="stretch" w="100%">
         <Box transition="0.5s" w="100%">
-          <NFTCard url={nft.image} />
+          <NFTCard url={nft.metadata?.ipfsUrl} />
         </Box>
         <VStack w="100%" align="start">
           <Card
@@ -31,8 +34,9 @@ const NftDetailsPage: FC = () => {
             gap="12px"
           >
             <NFTDetails
-              description={nft.description}
-              price={+nft.price}
+              description={nft.metadata?.description ?? ""}
+              price={0}
+              // price={+nft.price}
               owner={nft.owner}
             />
           </Card>
@@ -45,7 +49,7 @@ const NftDetailsPage: FC = () => {
             w="100%"
             gap="12px"
           >
-            <NFTTransactions transactions={nft.transactions} />
+            {/* <NFTTransactions transactions={nft.transactions} /> */}
           </Card>
         </VStack>
       </HStack>

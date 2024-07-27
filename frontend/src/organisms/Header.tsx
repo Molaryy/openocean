@@ -6,12 +6,18 @@ import { GiGoldBar } from "react-icons/gi";
 import { MdOutlineBarChart } from "react-icons/md";
 import NavButton from "../molecules/NavButton";
 import HeaderContainer from "../atoms/HeaderContainer";
+import { BiCollection } from "react-icons/bi";
 
 const Header: FC = () => (
   <HeaderContainer>
     <HomeButton />
     <WalletButton />
     <HStack spacing="24px">
+      <NavButton
+        path="/create-collection"
+        icon={BiCollection}
+        label="Collection"
+      />
       <NavButton path="/mint" icon={GiGoldBar} label="Mint" />
       <NavButton path="/stats" icon={MdOutlineBarChart} label="Stats" />
     </HStack>
