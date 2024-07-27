@@ -1,44 +1,39 @@
 import {
-  Box,
-  Button,
+  VStack,
+  Stack,
   FormControl,
   FormErrorMessage,
-  FormLabel,
-  HStack,
-  Icon,
-  Image,
-  Input,
-  Select,
-  Stack,
-  Text,
-  Textarea,
-  VStack,
   chakra,
+  FormLabel,
+  Input,
+  Textarea,
+  Button,
+  Icon,
+  Text,
   useToast,
+  SimpleGrid,
+  GridItem,
 } from "@chakra-ui/react";
 import { FC } from "react";
 import SingleUploadImage from "../molecules/SingleUploadImage";
 import { colors } from "../theme";
-import { GiGoldBar } from "react-icons/gi";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAccountStore } from "../store";
-import useMint from "../hooks/useMint";
 import usePinFileToIPFS from "../hooks/usePinFileToIPFS";
-import useGetAllCollections from "../hooks/useGetAllCollections";
-import { urlFromIpfsHash } from "../utils";
+import useCreateCollection from "../hooks/useCreateCollection";
+import { FaPlusSquare } from "react-icons/fa";
 
-interface MintForm {
-  name: string;
-  description: string;
+interface CreateCollectionForm {
   file: File;
-  collection: string;
+  name: string;
+  symbol: string;
+  description: string;
+  supply: number;
 }
 
-const MintPage: FC = () => {
+const CreateCollection: FC = () => {
   const { address } = useAccountStore();
-
-  const { data: collections } = useGetAllCollections();
 
   const {
     handleSubmit,
@@ -46,19 +41,18 @@ const MintPage: FC = () => {
     setValue,
     clearErrors,
     setError,
-    control,
     formState: { errors },
-  } = useForm<MintForm>();
+  } = useForm<CreateCollectionForm>();
 
   const toast = useToast();
   const navigate = useNavigate();
 
   const { mutate: pinFileToIPFS, isPending: isPendingPinFileToIPFS } =
     usePinFileToIPFS();
+  const { mutate: createCollection, isPending: isPendingCollectionCreation } =
+    useCreateCollection();
 
-  const { mutate: mintNft, isPending: isPendingMintNft } = useMint();
-
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit(async (data) => {
     if (!data.file) {
       setError("file", { message: "This field is required" });
       return;
@@ -73,20 +67,22 @@ const MintPage: FC = () => {
           duration: 5000,
           isClosable: true,
         });
-        mintNft(
+        createCollection(
           {
-            cltId: data.collection,
-            nftName: data.name,
-            ipfsUrl: res.data.IpfsHash,
+            name: data.name,
+            symbol: data.symbol,
+            addrOwner: address!,
             description: data.description,
-            owner: address!,
+            logo: res.data.IpfsHash,
+            avaiableNfts: data.supply,
           },
           {
             onSuccess: () => {
               toast({
                 colorScheme: "purple",
-                title: "NFT Minted",
-                description: "Your NFT has been minted successfully!",
+                title: "NFT Collection created",
+                description:
+                  "Your NFT Collection has been created successfully!",
                 status: "success",
                 duration: 5000,
                 isClosable: true,
@@ -97,7 +93,7 @@ const MintPage: FC = () => {
               toast({
                 colorScheme: "red",
                 title: "Error",
-                description: "There was an error minting the NFT",
+                description: "There was an error creating the NFT Collection",
                 status: "error",
                 duration: 5000,
                 isClosable: true,
@@ -122,7 +118,7 @@ const MintPage: FC = () => {
   return (
     <VStack align="start" w="100%" h="100%" spacing="32px">
       <Text userSelect="none" fontSize="32px">
-        Mint a new NFT
+        Create a new NFT Collection
       </Text>
       <Stack
         flexDir={{
@@ -157,68 +153,63 @@ const MintPage: FC = () => {
         <chakra.form onSubmit={onSubmit} w="100%" h="100%">
           <VStack w="100%" justify="space-between" h="100%">
             <VStack maxW="800px" w="100%" spacing="24px">
-              <FormControl isInvalid={!!errors.collection}>
-                <FormLabel color="gray.600">Collection</FormLabel>
-                <Controller
-                  name="collection"
-                  control={control}
-                  render={({ field }) => (
-                    <HStack w="100%" justify="space-between">
-                      <Select
-                        {...field}
-                        color="gray.300"
-                        placeholder="Choose your NFT's collection..."
-                        boxShadow="lg"
-                        border={`1px solid ${colors.gray[700]}`}
-                      >
-                        {collections?.map((collection) => (
-                          <option key={collection.id} value={collection.id}>
-                            {collection.name}
-                          </option>
-                        ))}
-                      </Select>
-                      {!!collections?.find((c) => c.id === field.value) && (
-                        <Box w="50px">
-                          <Image
-                            borderRadius="8px"
-                            h="40px"
-                            src={urlFromIpfsHash(
-                              collections?.find((c) => c.id === field.value)
-                                ?.logo ?? ""
-                            )}
-                          />
-                        </Box>
-                      )}
-                    </HStack>
+              <SimpleGrid columns={3} w="100%" gap="24px">
+                <GridItem colSpan={2}>
+                  <FormControl isInvalid={!!errors.name}>
+                    <FormLabel color="gray.600">Name</FormLabel>
+                    <Input
+                      {...register("name", { required: true })}
+                      color="gray.300"
+                      placeholder="Enter your collection's name..."
+                      boxShadow="lg"
+                      border={`1px solid ${colors.gray[700]}`}
+                    />
+                    {errors.name && (
+                      <FormErrorMessage>
+                        This field is required
+                      </FormErrorMessage>
+                    )}
+                  </FormControl>
+                </GridItem>
+                <FormControl isInvalid={!!errors.symbol}>
+                  <FormLabel color="gray.600">Symbol</FormLabel>
+                  <Input
+                    {...register("symbol", { required: true })}
+                    color="gray.300"
+                    placeholder="$NFT"
+                    boxShadow="lg"
+                    border={`1px solid ${colors.gray[700]}`}
+                  />
+                  {errors.symbol && (
+                    <FormErrorMessage>This field is required</FormErrorMessage>
                   )}
-                />
-                {errors.collection && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
-              </FormControl>
-              <FormControl isInvalid={!!errors.name}>
-                <FormLabel color="gray.600">Name</FormLabel>
-                <Input
-                  {...register("name", { required: true })}
-                  color="gray.300"
-                  placeholder="Enter your NFT's name..."
-                  boxShadow="lg"
-                  border={`1px solid ${colors.gray[700]}`}
-                />
-                {errors.name && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
-              </FormControl>
+                </FormControl>
+              </SimpleGrid>
               <FormControl isInvalid={!!errors.description}>
                 <FormLabel color="gray.600">Description</FormLabel>
                 <Textarea
                   {...register("description", { required: true })}
                   color="gray.300"
-                  placeholder="Enter your NFT's description..."
+                  placeholder="Enter your collection's description..."
                   boxShadow="lg"
                   border={`1px solid ${colors.gray[700]}`}
                 />
                 {errors.description && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
+              </FormControl>
+              <FormControl isInvalid={!!errors.supply}>
+                <FormLabel color="gray.600">Supply</FormLabel>
+                <Input
+                  {...register("supply", { required: true })}
+                  maxW="300px"
+                  color="gray.300"
+                  placeholder="Enter number of NFTs to mint..."
+                  boxShadow="lg"
+                  type="number"
+                  border={`1px solid ${colors.gray[700]}`}
+                />
+                {errors.supply && (
                   <FormErrorMessage>This field is required</FormErrorMessage>
                 )}
               </FormControl>
@@ -229,10 +220,10 @@ const MintPage: FC = () => {
               fontWeight="black"
               fontSize="32px"
               gap="12px"
-              isLoading={isPendingPinFileToIPFS || isPendingMintNft}
+              isLoading={isPendingPinFileToIPFS || isPendingCollectionCreation}
             >
-              Mint
-              <Icon as={GiGoldBar} />
+              Create
+              <Icon as={FaPlusSquare} />
             </Button>
           </VStack>
         </chakra.form>
@@ -241,4 +232,4 @@ const MintPage: FC = () => {
   );
 };
 
-export default MintPage;
+export default CreateCollection;

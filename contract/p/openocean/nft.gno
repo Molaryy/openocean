@@ -31,7 +31,7 @@ func (n *NFTtoken721) GetOwner() std.Address {
 	return n.owner
 }
 
-func (n *NFTtoken721) GetMetadata() string {
+func (n *NFTtoken721) GetMetadata() string { 
 	return n.metadata
 }
 

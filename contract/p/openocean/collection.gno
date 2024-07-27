@@ -69,7 +69,7 @@ func (c *Collection) SafeTransferFrom(
 func (c *Collection) SafeTransferFromWithData(
 	from std.Address,
 	to std.Address,
-	tokenId int,
+	tokenId string,
 	data string,
 ) {
 	c.nfts.Iterate("", "", func (id string, value interface{}) bool {
@@ -85,16 +85,16 @@ func (c *Collection) SafeTransferFromWithData(
 func (c *Collection) TransferFrom(
 	from std.Address,
 	to std.Address,
-	tokenId int,
+	tokenId string,
 ) {
 	// TODO
 }
 
-func (c *Collection) Approve(to std.Address, tokenId int) {
+func (c *Collection) Approve(to std.Address, tokenId string) {
 	// TODO
 }
 
-func (c *Collection) GetApproved(tokenId int) {
+func (c *Collection) GetApproved(tokenId string) {
 	// TODO
 }
 
@@ -108,6 +108,10 @@ func (c *Collection) IsApprovedForAll(owner std.Address, operator std.Address) {
 
 func (c *Collection) GetId() string {
 	return c.id
+}
+
+func (c *Collection) GetName() string {
+	return c.name
 }
 
 func (c *Collection) GetOwner() std.Address {
