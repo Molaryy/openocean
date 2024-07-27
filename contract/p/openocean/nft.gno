@@ -19,12 +19,8 @@ func (n *NFTtoken721) GetId() string {
 	return n.id
 }
 
-func (n *NFTtoken721) SetOwner(owner std.Address) bool {
-	if owner.IsValid() == false {
-		return false
-	}
-	n.owner = owner
-	return true
+func (n *NFTtoken721) GetName() string {
+	return n.name
 }
 
 func (n *NFTtoken721) GetOwner() std.Address {
@@ -35,24 +31,16 @@ func (n *NFTtoken721) GetMetadata() string {
 	return n.metadata
 }
 
-func (n *NFTtoken721) IsMinted() bool {
-	return n.isMinted
+func (n *NFTtoken721) SetOwner(owner std.Address) bool {
+	if owner.IsValid() == false {
+		return false
+	}
+	n.owner = owner
+	return true
 }
 
-func InitToken(
-	addrOwner std.Address, 
-	nftId string,
-) (*NFTtoken721, error) {
-	if addrOwner.IsValid() == false {
-		return nil, errors.New("Invalid owner address")
-	}
-	return &NFTtoken721 {
-		id: nftId,
-		name: "",
-		owner: addrOwner,
-		metadata: "",
-		isMinted: false,
-	}, nil
+func (n *NFTtoken721) IsMinted() bool {
+	return n.isMinted
 }
 
 func (n *NFTtoken721) Mint(
@@ -82,4 +70,20 @@ func (n *NFTtoken721) Mint(
 	n.owner = owner
 	n.name = name
 	return true
+}
+
+func InitToken(
+	addrOwner std.Address, 
+	nftId string,
+) (*NFTtoken721, error) {
+	if addrOwner.IsValid() == false {
+		return nil, errors.New("Invalid owner address")
+	}
+	return &NFTtoken721 {
+		id: nftId,
+		name: "",
+		owner: addrOwner,
+		metadata: "",
+		isMinted: false,
+	}, nil
 }
