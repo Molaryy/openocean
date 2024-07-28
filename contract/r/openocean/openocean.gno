@@ -2,6 +2,7 @@ package openr
 
 import (
 	"std"
+	"errors"
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/molaryy/openocean"
@@ -92,18 +93,72 @@ func GetCollections() string {
 }
 
 func MintInCollectionById(
-	cltId string,
+	collectionID string,
 	nftName string,
-	ipfsUrl string,
+	cid string,
 	description string,
-	owner std.Address,
 ) bool {
-	clt := openocean.GetCollectionByID(collections, cltId)
+	clt, ok := openocean.GetCollectionByID(collections, collectionID)
+	caller := std.GetOrigCaller()
 
-	if clt == nil {
-		return false
+	if ok == false {
+		panic(errors.New("Couldn't find collection: " + collectionID))
 	}
-	return clt.Mint(nftName, ipfsUrl, description, owner)
+	if caller != clt.GetOwner() {
+		panic(errors.New("You are not the owner of the collection"))
+	}
+	return clt.Mint(nftName, cid, description, caller)
+}
+
+func BuyNFT(collectionID string, nftID string) {
+	caller := std.GetOrigCaller()
+	clt, ok := openocean.GetCollectionByID(collections, collectionID)
+	coinSent := std.GetOrigSend()
+	banker := std.GetBanker(std.BankerTypeOrigSend)
+	realmAddr := std.CurrentRealm().Addr()
+
+	if ok == false {
+		panic(errors.New("Couldn't find collection: " + collectionID))
+	}
+	
+	nft, ok := clt.GetNFTByID(nftID)
+
+	if ok == false {
+		panic(errors.New("Couldn't find an nft with this iD"))
+	}
+	if nft.GetOwner() == caller {
+		panic(errors.New("You already have this nft: " + nftID))
+	}
+	if nft.GetPrice() > coinSent.AmountOf("ugnot") {
+		panic(errors.New("You don't have enough ugnots to buy the nft: " + nftID))
+	}
+
+	clt.IncreateNFTSBought()
+	nft.SetOwner(caller)
+	banker.SendCoins(realmAddr, clt.GetOwner(), std.Coins{coinSent[0]})
+}
+
+func GetCollectionStats(collectionID string) string {
+	clt, ok := openocean.GetCollectionByID(collections, collectionID)
+
+	if ok == false {
+		panic(errors.New("Couldn't find collection: " + collectionID))
+	}
+
+	collectionJSON := json.ObjectNode("", map[string]*json.Node{
+		"id": json.StringNode("id", clt.GetId()),
+		"name": json.StringNode("name", clt.GetName()),
+		"logo": json.StringNode("logo", clt.GetLogo()),
+		"volume": json.StringNode("volume", string(clt.GetAvaiableTokens())),
+		"sales": json.StringNode("sales", string(clt.GetNFTSBought())),
+	})
+
+	encoded, err := json.Marshal(collectionJSON)
+
+	if err != nil {
+		panic(err)
+	}
+	return string(encoded)
 }
 
 func Render(path string) string {

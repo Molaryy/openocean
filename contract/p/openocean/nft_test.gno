@@ -88,7 +88,7 @@ func TestMintNft(t *testing.T) {
 		expectedMetadata := json.ObjectNode("", map[string]*json.Node{
 			"owner": json.StringNode("owner", nwAdr.String()),
 			"name": json.StringNode("name", "Pablo"),
-			"ipfsUrl": json.StringNode("ipfsUrl", "test"),
+			"cid": json.StringNode("cid", "test"),
 			"description": json.StringNode("description", "hey everyone"),
 		})
 

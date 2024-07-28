@@ -15,8 +15,10 @@ type Collection struct {
 	description string
 	logo string // ipfs path
 	avaiableTokens int
+	nftsBought int
 	nfts *avl.Tree
 }
+
 
 func (c *Collection) BalanceOf(owner std.Address) (uint64, bool) {
 	var blc uint64 = 0
@@ -138,6 +140,14 @@ func (c *Collection) GetOwner() std.Address {
 	return c.addrOwner
 }
 
+func (c *Collection) IncreateNFTSBought() {
+	c.nftsBought += 1
+}
+
+func (c *Collection) GetNFTSBought() int {
+	return c.nftsBought
+}
+
 func (c *Collection) GetDescription() string {
 	return c.description
 }
@@ -172,7 +182,7 @@ func (c *Collection) getAvailableNFT() (*NFTtoken721, bool) {
 
 func (c *Collection) Mint(
 	name string,
-	ipfsUrl string,
+	cid string,
 	description string,
 	owner std.Address,
 ) bool {
@@ -187,18 +197,35 @@ func (c *Collection) Mint(
 		ufmt.Println("There are no more available nfts")
 		return false
 	}
-	nft.Mint(name, ipfsUrl, description, owner)
+	nft.Mint(name, cid, description, owner)
 	return true
 }
 
-func GetCollectionByID(clts *avl.Tree, idToFind string) *Collection {
+func (c *Collection) GetNFTByID(nftID string) (*NFTtoken721, bool)  {
+	var nft *NFTtoken721
+	found := false
+
+	c.nfts.Iterate("", "", func (id string, i interface{}) bool {
+		n := i.(*NFTtoken721)
+
+		if n.GetId() == nftID {
+			nft = n
+			found = true
+			return true
+		}
+		return false
+	})
+	return nft, found
+}
+
+func GetCollectionByID(clts *avl.Tree, idToFind string) (*Collection, bool) {
 	value, exists := clts.Get(idToFind)
 
 	if exists == false {
 		ufmt.Println("Couldn't find collection with ID: ", idToFind)
-		return nil
+		return nil, false
 	}
-	return value.(*Collection)
+	return value.(*Collection), true
 }
  
 func CreateCollection(
