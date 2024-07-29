@@ -55,9 +55,10 @@ const WalletButton: FC = () => {
 
     setIsLoading(false);
   };
+
   return (
     <HStack
-      onMouseEnter={handleWalletConnect}
+      onClick={handleWalletConnect}
       borderRadius="16px"
       border="1px solid gray"
       px="12px"
@@ -69,7 +70,6 @@ const WalletButton: FC = () => {
       <Button
         _hover={{ color: "purple.100" }}
         color="purple.200"
-        onClick={handleWalletConnect}
         isLoading={isLoading}
         isDisabled={!!accountInfo}
       >{`{ wallet }`}</Button>
