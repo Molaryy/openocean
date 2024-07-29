@@ -38,11 +38,11 @@ const StatsPage: FC = () => {
 
   const { address } = useAccountStore();
 
-  const { data: stats } = useGetAllCollections();
+  const { data } = useGetAllCollections();
 
-  const filteredStats = useMemo<StatRow[]>(
+  const stats = useMemo<StatRow[]>(
     () =>
-      stats
+      data
         ?.filter((stat) =>
           tabIndex === 0 ? true : !!stat.stars.find((s) => s === address)
         )
@@ -54,24 +54,23 @@ const StatsPage: FC = () => {
           volume: stat.volume,
           starred: !!stat.stars.find((s) => s === address),
           id: stat.id,
-        })) ?? [],
-    [address, stats, tabIndex]
+        }))
+        .sort((a, b) => a.sales - b.sales) ?? [],
+    [address, data, tabIndex]
   );
 
   const { mutate: triggerStar } = useStarCollection();
 
   const handleStar = useCallback(
     (collectionId: string) => {
-      const collection = filteredStats?.find(
-        (stat) => stat.id === collectionId
-      );
+      const collection = stats?.find((stat) => stat.id === collectionId);
       if (!collection) return;
       triggerStar({
         collectionId,
         starred: collection.starred ? "false" : "true",
       });
     },
-    [filteredStats, triggerStar]
+    [stats, triggerStar]
   );
 
   return (
@@ -103,7 +102,7 @@ const StatsPage: FC = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {filteredStats.map((stat, idx) => (
+            {stats.map((stat, idx) => (
               <Tr
                 role="group"
                 color="gray.500"
