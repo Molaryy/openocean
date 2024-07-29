@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { constants } from "../constants";
 import axios from "axios";
 
-const usePinFileToIPFS = () => {
-  return useMutation({
+const usePinFileToIPFS = () =>
+  useMutation({
     mutationFn: (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
@@ -32,6 +32,5 @@ const usePinFileToIPFS = () => {
       );
     },
   });
-};
 
 export default usePinFileToIPFS;

@@ -15,11 +15,13 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { FC, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { displayUgnot } from "../utils";
 import NFTCard from "../atoms/NFTCard";
 import { ImStarEmpty, ImStarFull } from "react-icons/im";
 import useGetAllCollections from "../hooks/useGetAllCollections";
+import useStarCollection from "../hooks/useStarCollection";
+import { useAccountStore } from "../store";
 
 interface StatRow {
   name: string;
@@ -28,26 +30,48 @@ interface StatRow {
   price: number;
   sales: number;
   starred: boolean;
+  id: string;
 }
 
 const StatsPage: FC = () => {
   const [tabIndex, setTabIndex] = useState(0);
+
+  const { address } = useAccountStore();
 
   const { data: stats } = useGetAllCollections();
 
   const filteredStats = useMemo<StatRow[]>(
     () =>
       stats
-        ?.filter((stat) => (tabIndex === 0 ? true : true))
+        ?.filter((stat) =>
+          tabIndex === 0 ? true : !!stat.stars.find((s) => s === address)
+        )
         .map<StatRow>((stat) => ({
           img: stat.logo,
           name: stat.name,
           price: stat.nfts.reduce((acc, nft) => acc + nft.price, 0),
           sales: stat.sales,
           volume: stat.volume,
-          starred: true,
+          starred: !!stat.stars.find((s) => s === address),
+          id: stat.id,
         })) ?? [],
-    [stats, tabIndex]
+    [address, stats, tabIndex]
+  );
+
+  const { mutate: triggerStar } = useStarCollection();
+
+  const handleStar = useCallback(
+    (collectionId: string) => {
+      const collection = filteredStats?.find(
+        (stat) => stat.id === collectionId
+      );
+      if (!collection) return;
+      triggerStar({
+        collectionId,
+        starred: collection.starred ? "false" : "true",
+      });
+    },
+    [filteredStats, triggerStar]
   );
 
   return (
@@ -103,6 +127,7 @@ const StatsPage: FC = () => {
                 <Td textAlign="end">{stat.sales}</Td>
                 <Td textAlign="end">
                   <Icon
+                    onClick={() => handleStar(stat.id)}
                     as={stat.starred ? ImStarFull : ImStarEmpty}
                     cursor="pointer"
                   />

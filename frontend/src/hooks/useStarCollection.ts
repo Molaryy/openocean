@@ -3,23 +3,23 @@ import { constants } from "../constants";
 import { AdenaService } from "../services/adena/adena";
 import { EMessageType } from "../services/adena/adena.types";
 import { useAccountStore } from "../store";
-import { CreateCollectionDto } from "../types/collections";
+import { StarCollectionDto } from "../types/collections";
 
-const useCreateCollection = () => {
+const useStarCollection = () => {
   const { address } = useAccountStore();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: CreateCollectionDto) =>
+    mutationFn: (payload: StarCollectionDto) =>
       AdenaService.sendTransaction(
         [
           {
             type: EMessageType.MSG_CALL,
             value: {
               caller: address!,
-              send: "5ugnot",
+              send: "",
               pkg_path: constants.realmPath,
-              func: "AddCollection",
+              func: "StarCollection",
               args: Object.values(payload),
             },
           },
@@ -32,4 +32,4 @@ const useCreateCollection = () => {
   });
 };
 
-export default useCreateCollection;
+export default useStarCollection;

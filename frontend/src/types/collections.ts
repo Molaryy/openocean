@@ -18,6 +18,7 @@ export interface Collection {
   nfts: Nft[];
   sales: number;
   volume: number;
+  stars: string[];
 }
 
 export interface CreateCollectionDto {
@@ -26,4 +27,9 @@ export interface CreateCollectionDto {
   description: string;
   logo: string;
   avaiableNfts: number;
+}
+
+export interface StarCollectionDto {
+  collectionId: string;
+  starred: "true" | "false";
 }
