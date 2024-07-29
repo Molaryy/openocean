@@ -40,7 +40,7 @@ func AddCollection(
 	realmAddr := std.CurrentRealm().Addr()
 
 	if coinSent.AmountOf("ugnot") < 5 {
-		panic(errors.New("You don't have enough founds yo create a collection, it costs 5 ugnots and you have " + string(coinSent.AmountOf("ugnot")) + " ugnots"))
+		panic(errors.New("You don't have enough founds to create a collection, it costs 5 ugnots and you have " + string(coinSent.AmountOf("ugnot")) + " ugnots"))
 	}
 	clt, err := openocean.CreateCollection(
 		collectionCounter,
