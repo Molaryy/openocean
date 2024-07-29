@@ -29,15 +29,13 @@ const NftPage: FC = () => {
             cursor="pointer"
             role="group"
             gap="12px"
-            bg="linear-gradient(145deg, #2b2e3a, #1f2029)"
-            boxShadow="lg"
             p="12px"
           >
             <Text textAlign="center" color="gray.300" fontWeight="bold">
               {nft.metadata?.name}
             </Text>
             <Divider w="50%" mx="auto" />
-            <NFTCard key={nft.id} url={nft.metadata?.ipfsUrl} />
+            <NFTCard key={nft.id} url={nft.metadata?.cid} />
             <HStack w="100%" justify="space-between">
               {/* <Text color="gray.500">{displayGnot(+nft.price)}</Text> */}
             </HStack>

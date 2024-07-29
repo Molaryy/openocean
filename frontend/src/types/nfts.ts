@@ -2,7 +2,7 @@ export interface NftMetadata {
   name: string;
   description: string;
   owner: string;
-  ipfsUrl: string;
+  cid: string;
 }
 
 export interface Nft {
@@ -10,12 +10,13 @@ export interface Nft {
   owner: string;
   isMinted: boolean;
   metadata?: NftMetadata;
+  price: number;
 }
 
 export interface MintDto {
   cltId: string;
   nftName: string;
-  ipfsUrl: string;
+  cid: string;
   description: string;
-  owner: string;
+  price: number;
 }

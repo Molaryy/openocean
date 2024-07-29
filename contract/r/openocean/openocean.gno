@@ -88,6 +88,7 @@ func GetCollections() string {
 				"id": json.StringNode("id", nft.GetId()),
 				"owner": json.StringNode("owner", nft.GetOwner().String()),
 				"isMinted": json.BoolNode("isMinted", nft.IsMinted()),
+				"price": json.NumberNode("price", float64(nft.GetPrice())),
 			})
 			cltField.AppendObject(nft.GetId(), nftField)
 			metadata := nft.GetMetadata()

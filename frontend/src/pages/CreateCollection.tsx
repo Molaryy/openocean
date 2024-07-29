@@ -19,7 +19,6 @@ import SingleUploadImage from "../molecules/SingleUploadImage";
 import { colors } from "../theme";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useAccountStore } from "../store";
 import usePinFileToIPFS from "../hooks/usePinFileToIPFS";
 import useCreateCollection from "../hooks/useCreateCollection";
 import { FaPlusSquare } from "react-icons/fa";
@@ -29,12 +28,10 @@ interface CreateCollectionForm {
   name: string;
   symbol: string;
   description: string;
-  supply: number;
+  avaiableNfts: number;
 }
 
 const CreateCollection: FC = () => {
-  const { address } = useAccountStore();
-
   const {
     handleSubmit,
     register,
@@ -71,10 +68,9 @@ const CreateCollection: FC = () => {
           {
             name: data.name,
             symbol: data.symbol,
-            addrOwner: address!,
             description: data.description,
             logo: res.data.IpfsHash,
-            avaiableNfts: data.supply,
+            avaiableNfts: data.avaiableNfts,
           },
           {
             onSuccess: () => {
@@ -198,10 +194,10 @@ const CreateCollection: FC = () => {
                   <FormErrorMessage>This field is required</FormErrorMessage>
                 )}
               </FormControl>
-              <FormControl isInvalid={!!errors.supply}>
+              <FormControl isInvalid={!!errors.avaiableNfts}>
                 <FormLabel color="gray.600">Supply</FormLabel>
                 <Input
-                  {...register("supply", { required: true })}
+                  {...register("avaiableNfts", { required: true })}
                   maxW="300px"
                   color="gray.300"
                   placeholder="Enter number of NFTs to mint..."
@@ -209,7 +205,7 @@ const CreateCollection: FC = () => {
                   type="number"
                   border={`1px solid ${colors.gray[700]}`}
                 />
-                {errors.supply && (
+                {errors.avaiableNfts && (
                   <FormErrorMessage>This field is required</FormErrorMessage>
                 )}
               </FormControl>

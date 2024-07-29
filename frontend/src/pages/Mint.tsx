@@ -22,7 +22,6 @@ import { colors } from "../theme";
 import { GiGoldBar } from "react-icons/gi";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useAccountStore } from "../store";
 import useMint from "../hooks/useMint";
 import usePinFileToIPFS from "../hooks/usePinFileToIPFS";
 import useGetAllCollections from "../hooks/useGetAllCollections";
@@ -33,11 +32,10 @@ interface MintForm {
   description: string;
   file: File;
   collection: string;
+  price: number;
 }
 
 const MintPage: FC = () => {
-  const { address } = useAccountStore();
-
   const { data: collections } = useGetAllCollections();
 
   const {
@@ -77,9 +75,9 @@ const MintPage: FC = () => {
           {
             cltId: data.collection,
             nftName: data.name,
-            ipfsUrl: res.data.IpfsHash,
+            cid: res.data.IpfsHash,
             description: data.description,
-            owner: address!,
+            price: data.price,
           },
           {
             onSuccess: () => {
@@ -219,6 +217,21 @@ const MintPage: FC = () => {
                   border={`1px solid ${colors.gray[700]}`}
                 />
                 {errors.description && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
+              </FormControl>
+              <FormControl isInvalid={!!errors.price}>
+                <FormLabel color="gray.600">Price</FormLabel>
+                <Input
+                  {...register("price", { required: true })}
+                  maxW="300px"
+                  color="gray.300"
+                  placeholder="Enter the price of the NFT..."
+                  boxShadow="lg"
+                  type="number"
+                  border={`1px solid ${colors.gray[700]}`}
+                />
+                {errors.price && (
                   <FormErrorMessage>This field is required</FormErrorMessage>
                 )}
               </FormControl>

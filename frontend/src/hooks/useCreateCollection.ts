@@ -9,15 +9,14 @@ const useCreateCollection = () => {
   const { address } = useAccountStore();
 
   return useMutation({
-    mutationFn: (payload: CreateCollectionDto) => {
-      console.log(Object.values(payload));
-      return AdenaService.sendTransaction(
+    mutationFn: (payload: CreateCollectionDto) =>
+      AdenaService.sendTransaction(
         [
           {
             type: EMessageType.MSG_CALL,
             value: {
               caller: address!,
-              send: "",
+              send: "5ugnot",
               pkg_path: constants.realmPath,
               func: "AddCollection",
               args: Object.values(payload),
@@ -25,8 +24,7 @@ const useCreateCollection = () => {
           },
         ],
         5000000
-      );
-    },
+      ),
   });
 };
 

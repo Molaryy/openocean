@@ -12,7 +12,6 @@ export interface Collection {
 export interface CreateCollectionDto {
   name: string;
   symbol: string;
-  addrOwner: string;
   description: string;
   logo: string;
   avaiableNfts: number;

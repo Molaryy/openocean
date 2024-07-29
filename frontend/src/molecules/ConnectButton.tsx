@@ -4,7 +4,7 @@ import { AdenaService } from "../services/adena/adena";
 import { IAccountInfo } from "../services/adena/adena.types";
 import { constants } from "../constants";
 import { useAccountStore } from "../store";
-import { displayBalance } from "../utils";
+import { displayUgnot } from "../utils";
 
 const WalletButton: FC = () => {
   const toast = useToast();
@@ -73,7 +73,7 @@ const WalletButton: FC = () => {
       transition="1s"
       divider={<StackDivider />}
     >
-      {!!accountInfo && <Text>{displayBalance(ugnots)}</Text>}
+      {!!accountInfo && <Text>{displayUgnot(ugnots)}</Text>}
       <Button
         _hover={{ color: "purple.100" }}
         color="purple.200"
