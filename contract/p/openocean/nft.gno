@@ -13,6 +13,7 @@ type NFTtoken721 struct {
 	owner std.Address
 	metadata string
 	isMinted bool
+	price int64
 }
 
 func (n *NFTtoken721) GetId() string {
@@ -31,6 +32,10 @@ func (n *NFTtoken721) GetMetadata() string {
 	return n.metadata
 }
 
+func (n *NFTtoken721) GetPrice() int64 {
+	return n.price
+}
+
 func (n *NFTtoken721) SetOwner(owner std.Address) bool {
 	if owner.IsValid() == false {
 		return false
@@ -45,9 +50,10 @@ func (n *NFTtoken721) IsMinted() bool {
 
 func (n *NFTtoken721) Mint(
 	name string,
-	ipfsUrl string,
+	cid string,
 	description string,
 	owner std.Address,
+	price int64,
 ) bool {
 	if n.isMinted == true {
 		ufmt.Println("NFT: ", n.id, " has already been minted!")
@@ -56,7 +62,7 @@ func (n *NFTtoken721) Mint(
 	nftJson := json.ObjectNode("", map[string]*json.Node{
 		"owner": json.StringNode("owner", owner.String()),
 		"name": json.StringNode("name", name),
-		"ipfsUrl": json.StringNode("ipfsUrl", ipfsUrl),
+		"cid": json.StringNode("cid", cid),
 		"description": json.StringNode("description", description),
 	})
 
@@ -69,6 +75,7 @@ func (n *NFTtoken721) Mint(
 	n.isMinted = true
 	n.owner = owner
 	n.name = name
+	n.price = price
 	return true
 }
 
