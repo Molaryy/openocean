@@ -3,10 +3,11 @@ import { motion } from "framer-motion";
 import { FC } from "react";
 import NFTCard from "../atoms/NFTCard";
 import { useNavigate } from "react-router-dom";
-import data from "../pages/nfts/data";
+import useGetAllNFTs from "../hooks/useGetAllNFTs";
 
 const AvailableNFTs: FC = () => {
-  const duplicatedNfts = [...data, ...data];
+  const { nfts } = useGetAllNFTs();
+  const duplicatedNfts = [...nfts, ...nfts];
   const nftWidth = 33;
 
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const AvailableNFTs: FC = () => {
       <motion.div
         style={{ display: "flex" }}
         animate={{
-          x: [`-${nftWidth * data.length}vw`, "0px"],
+          x: [`-${nftWidth * nfts.length}vw`, "0px"],
           transition: {
             ease: "linear",
             duration: 20,
@@ -26,14 +27,14 @@ const AvailableNFTs: FC = () => {
       >
         {duplicatedNfts.map((nft) => (
           <Box
+            key={nft.id}
             cursor="pointer"
             onClick={() => navigate(`/nfts/${nft.id}`)}
-            key={nft.name}
             w={`${nftWidth}vw`}
             px="24px"
             flexShrink={0}
           >
-            <NFTCard url={nft.image} />
+            <NFTCard url={nft?.metadata?.ipfsUrl} />
           </Box>
         ))}
       </motion.div>

@@ -64,7 +64,7 @@ func AddCollection(
 
 
 func GetCollections() string {
-	cltsJson := json.ObjectNode("", map[string]*json.Node{})
+	cltsJson := json.ArrayNode("", []*json.Node{})
 
 
 	collections.Iterate("", "", func (id string, value interface{}) bool {
@@ -74,24 +74,35 @@ func GetCollections() string {
 			return true
 		}
 		nfts := clt.GetNFTS()
+		nftsJson := json.ArrayNode("", []*json.Node{})
 		cltField := json.ObjectNode("", map[string]*json.Node{
 			"id": json.StringNode("id", clt.GetId()),
+			"name": json.StringNode("name", clt.GetName()),
 			"logo": json.StringNode("logo", clt.GetLogo()),
 			"owner": json.StringNode("owner", clt.GetOwner().String()),
 			"description": json.StringNode("description", clt.GetDescription()),
 		})
-		nfts.Iterate("", "", func (id string, value interface{}) bool {
-			nft := value.(* openocean.NFTtoken721)
+		nfts.Iterate("", "", func (id string, valueNft interface{}) bool {
+			nft := valueNft.(* openocean.NFTtoken721)
 			nftField := json.ObjectNode("", map[string]*json.Node{
 				"id": json.StringNode("id", nft.GetId()),
 				"owner": json.StringNode("owner", nft.GetOwner().String()),
-				"metadata": json.StringNode("metadata", nft.GetMetadata()),
 				"isMinted": json.BoolNode("isMinted", nft.IsMinted()),
 			})
 			cltField.AppendObject(nft.GetId(), nftField)
+			metadata := nft.GetMetadata()
+			if metadata != "" {
+				metadataJson, err := json.Unmarshal([]byte(metadata))
+				if err != nil {
+					panic(err)
+				}
+				nftField.AppendObject("metadata", metadataJson)
+			}
+			nftsJson.AppendArray(nftField)
 			return false
 		})
-		cltsJson.AppendObject("", cltField)
+		cltField.AppendObject("nfts", nftsJson)
+		cltsJson.AppendArray(cltField)
 		return false
 	})
 	encoded, err := json.Marshal(cltsJson)
