@@ -9,6 +9,9 @@ import (
 	"gno.land/p/demo/json"
 )
 
+const (
+	openoceanAdr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
+)
 
 var (
 	collections *avl.Tree
@@ -27,17 +30,24 @@ var count int
 func AddCollection(
 	name string,
 	symbol string,
-	addrOwner std.Address,
 	description string,
 	logo string,
 	avaiableNfts int,
 ) {
+	caller := std.GetOrigCaller()
+	coinSent := std.GetOrigSend()
+	banker := std.GetBanker(std.BankerTypeOrigSend)
+	realmAddr := std.CurrentRealm().Addr()
+
+	if coinSent.AmountOf("ugnot") < 5 {
+		panic(errors.New("You don't have enough founds yo create a collection, it costs 5 ugnots and you have " + string(coinSent.AmountOf("ugnot")) + " ugnots"))
+	}
 	clt, err := openocean.CreateCollection(
 		collectionCounter,
 		&nftID,
 		name,
 		symbol,
-		addrOwner,
+		caller,
 		description,
 		logo,
 		avaiableNfts,
@@ -45,6 +55,7 @@ func AddCollection(
 	if clt == nil || err != nil {
 		panic(err)
 	}
+	banker.SendCoins(realmAddr, openoceanAdr, std.Coins{coinSent[0]})
 	id := clt.GetId()
     collections.Set(id, clt)
 	ufmt.Println("Collection: (", id, ") created successfully!")
@@ -68,7 +79,6 @@ func GetCollections() string {
 			"logo": json.StringNode("logo", clt.GetLogo()),
 			"owner": json.StringNode("owner", clt.GetOwner().String()),
 			"description": json.StringNode("description", clt.GetDescription()),
-			"nfts": json.ObjectNode("", map[string]*json.Node{}),
 		})
 		nfts.Iterate("", "", func (id string, value interface{}) bool {
 			nft := value.(* openocean.NFTtoken721)
@@ -78,7 +88,7 @@ func GetCollections() string {
 				"metadata": json.StringNode("metadata", nft.GetMetadata()),
 				"isMinted": json.BoolNode("isMinted", nft.IsMinted()),
 			})
-			cltField.AppendObject("nft", nftField)
+			cltField.AppendObject(nft.GetId(), nftField)
 			return false
 		})
 		cltsJson.AppendObject("", cltField)
@@ -97,6 +107,7 @@ func MintInCollectionById(
 	nftName string,
 	cid string,
 	description string,
+	price int64,
 ) bool {
 	clt, ok := openocean.GetCollectionByID(collections, collectionID)
 	caller := std.GetOrigCaller()
@@ -107,7 +118,7 @@ func MintInCollectionById(
 	if caller != clt.GetOwner() {
 		panic(errors.New("You are not the owner of the collection"))
 	}
-	return clt.Mint(nftName, cid, description, caller)
+	return clt.Mint(nftName, cid, description, caller, price)
 }
 
 func BuyNFT(collectionID string, nftID string) {
@@ -145,12 +156,25 @@ func GetCollectionStats(collectionID string) string {
 		panic(errors.New("Couldn't find collection: " + collectionID))
 	}
 
+	nfts := clt.GetNFTS()
 	collectionJSON := json.ObjectNode("", map[string]*json.Node{
 		"id": json.StringNode("id", clt.GetId()),
 		"name": json.StringNode("name", clt.GetName()),
 		"logo": json.StringNode("logo", clt.GetLogo()),
 		"volume": json.StringNode("volume", string(clt.GetAvaiableTokens())),
 		"sales": json.StringNode("sales", string(clt.GetNFTSBought())),
+	})
+
+	nfts.Iterate("", "", func (id string, value interface{}) bool {
+		nft := value.(* openocean.NFTtoken721)
+		nftJSON := json.ObjectNode("", map[string]*json.Node{
+			"id": json.StringNode("id", nft.GetId()),
+			"name": json.StringNode("name", nft.GetName()),
+			"metadata": json.StringNode("metadata", nft.GetMetadata()),
+			"price": json.StringNode("price", string(nft.GetPrice())),
+		})
+		collectionJSON.AppendObject(nft.GetId(), nftJSON)
+		return false
 	})
 
 	encoded, err := json.Marshal(collectionJSON)

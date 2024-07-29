@@ -53,6 +53,7 @@ func (n *NFTtoken721) Mint(
 	cid string,
 	description string,
 	owner std.Address,
+	price int64,
 ) bool {
 	if n.isMinted == true {
 		ufmt.Println("NFT: ", n.id, " has already been minted!")
@@ -74,6 +75,7 @@ func (n *NFTtoken721) Mint(
 	n.isMinted = true
 	n.owner = owner
 	n.name = name
+	n.price = price
 	return true
 }
 

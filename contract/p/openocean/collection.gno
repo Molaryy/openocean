@@ -185,6 +185,7 @@ func (c *Collection) Mint(
 	cid string,
 	description string,
 	owner std.Address,
+	price int64,
 ) bool {
 	if c.avaiableTokens <= 0 {
 		ufmt.Println("Collection hasn`t any available tokens")
@@ -197,7 +198,7 @@ func (c *Collection) Mint(
 		ufmt.Println("There are no more available nfts")
 		return false
 	}
-	nft.Mint(name, cid, description, owner)
+	nft.Mint(name, cid, description, owner, price)
 	return true
 }
 
