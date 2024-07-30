@@ -15,39 +15,62 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { FC, useMemo, useState } from "react";
-import { displayGnot } from "../utils";
+import { FC, useCallback, useMemo, useState } from "react";
+import { displayUgnot } from "../utils";
 import NFTCard from "../atoms/NFTCard";
 import { ImStarEmpty, ImStarFull } from "react-icons/im";
+import useGetAllCollections from "../hooks/useGetAllCollections";
+import useStarCollection from "../hooks/useStarCollection";
+import { useAccountStore } from "../store";
+
+interface StatRow {
+  name: string;
+  img: string;
+  volume: number;
+  price: number;
+  sales: number;
+  starred: boolean;
+  id: string;
+}
 
 const StatsPage: FC = () => {
-  const stats = useMemo(
-    () => [
-      {
-        img: "https://i.seadn.io/gae/lHexKRMpw-aoSyB1WdFBff5yfANLReFxHzt1DOj_sg7mS14yARpuvYcUtsyyx-Nkpk6WTcUPFoG53VnLJezYi8hAs0OxNZwlw6Y-dmI?auto=format&dpr=1&w=64",
-        name: "Mutant Ape Yacht Club",
-        volume: 37,
-        price: 1.55,
-        sales: 24,
-        starred: true,
-      },
-      {
-        img: "https://i.seadn.io/gae/yNi-XdGxsgQCPpqSio4o31ygAV6wURdIdInWRcFIl46UjUQ1eV7BEndGe8L661OoG-clRi7EgInLX4LPu9Jfw4fq0bnVYHqg7RFi?auto=format&dpr=1&w=64",
-        name: "Pudgy Penguins",
-        volume: 36,
-        price: 9.99,
-        sales: 4,
-        starred: false,
-      },
-    ],
-    []
-  );
-
   const [tabIndex, setTabIndex] = useState(0);
 
-  const filteredStats = useMemo(
-    () => (tabIndex === 0 ? stats : stats.filter((stat) => stat.starred)),
-    [stats, tabIndex]
+  const { address } = useAccountStore();
+
+  const { data } = useGetAllCollections();
+
+  const stats = useMemo<StatRow[]>(
+    () =>
+      data
+        ?.filter((stat) =>
+          tabIndex === 0 ? true : !!stat.stars.find((s) => s === address)
+        )
+        .map<StatRow>((stat) => ({
+          img: stat.logo,
+          name: stat.name,
+          price: stat.nfts.reduce((acc, nft) => acc + nft.price, 0),
+          sales: stat.sales,
+          volume: stat.volume,
+          starred: !!stat.stars.find((s) => s === address),
+          id: stat.id,
+        }))
+        .sort((a, b) => a.sales - b.sales) ?? [],
+    [address, data, tabIndex]
+  );
+
+  const { mutate: triggerStar } = useStarCollection();
+
+  const handleStar = useCallback(
+    (collectionId: string) => {
+      const collection = stats?.find((stat) => stat.id === collectionId);
+      if (!collection) return;
+      triggerStar({
+        collectionId,
+        starred: collection.starred ? "false" : "true",
+      });
+    },
+    [stats, triggerStar]
   );
 
   return (
@@ -72,14 +95,14 @@ const StatsPage: FC = () => {
             <Tr>
               <Th>#</Th>
               <Th>Name</Th>
-              <Th>Volume</Th>
-              <Th>Price</Th>
-              <Th>Sales</Th>
+              <Th textAlign="end">Volume</Th>
+              <Th textAlign="end">Price</Th>
+              <Th textAlign="end">Sales</Th>
               <Th />
             </Tr>
           </Thead>
           <Tbody>
-            {filteredStats.map((stat, idx) => (
+            {stats.map((stat, idx) => (
               <Tr
                 role="group"
                 color="gray.500"
@@ -98,11 +121,12 @@ const StatsPage: FC = () => {
                     </Text>
                   </HStack>
                 </Td>
-                <Td>{stat.volume}</Td>
-                <Td>{displayGnot(stat.price)}</Td>
-                <Td>{stat.sales}</Td>
-                <Td>
+                <Td textAlign="end">{stat.volume}</Td>
+                <Td textAlign="end">{displayUgnot(stat.price)}</Td>
+                <Td textAlign="end">{stat.sales}</Td>
+                <Td textAlign="end">
                   <Icon
+                    onClick={() => handleStar(stat.id)}
                     as={stat.starred ? ImStarFull : ImStarEmpty}
                     cursor="pointer"
                   />

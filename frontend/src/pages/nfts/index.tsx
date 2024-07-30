@@ -11,6 +11,7 @@ import NFTCard from "../../atoms/NFTCard";
 // import { displayGnot } from "../../utils";
 import { useNavigate } from "react-router-dom";
 import useGetAllNFTs from "../../hooks/useGetAllNFTs";
+import { displayUgnot } from "../../utils";
 
 const NftPage: FC = () => {
   const navigate = useNavigate();
@@ -29,17 +30,15 @@ const NftPage: FC = () => {
             cursor="pointer"
             role="group"
             gap="12px"
-            bg="linear-gradient(145deg, #2b2e3a, #1f2029)"
-            boxShadow="lg"
             p="12px"
           >
             <Text textAlign="center" color="gray.300" fontWeight="bold">
               {nft.metadata?.name}
             </Text>
             <Divider w="50%" mx="auto" />
-            <NFTCard key={nft.id} url={nft.metadata?.ipfsUrl} />
-            <HStack w="100%" justify="space-between">
-              {/* <Text color="gray.500">{displayGnot(+nft.price)}</Text> */}
+            <NFTCard key={nft.id} url={nft.metadata?.cid} />
+            <HStack w="100%" justify="end">
+              <Text color="gray.500">{displayUgnot(+nft.price)}</Text>
             </HStack>
           </Card>
         ))}

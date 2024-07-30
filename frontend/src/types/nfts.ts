@@ -1,21 +1,22 @@
-export interface NftMetadata {
+export type NftMetadata = {
   name: string;
   description: string;
   owner: string;
-  ipfsUrl: string;
-}
+  cid: string;
+};
 
-export interface Nft {
+export type Nft = {
   id: string;
   owner: string;
   isMinted: boolean;
   metadata?: NftMetadata;
-}
+  price: number;
+};
 
-export interface MintDto {
+export type MintDto = {
   cltId: string;
   nftName: string;
-  ipfsUrl: string;
+  cid: string;
   description: string;
-  owner: string;
-}
+  price: number;
+};
