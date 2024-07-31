@@ -159,12 +159,20 @@ func BuyNFT(collectionID string, nftID string) {
 	if nft.GetOwner() == caller {
 		panic(errors.New("You already have this nft: " + nftID))
 	}
+	if nft.IsBought() == true {
+		if nft.GetOwner() == caller {
+			panic(errors.New("You already bought this nft: " + nftID))
+		} else {
+			panic(errors.New("Someone else already bought this nft: " + nftID))
+		}
+	}
 	if nft.GetPrice() > coinSent.AmountOf("ugnot") {
 		panic(errors.New("You don't have enough ugnots to buy the nft: " + nftID))
 	}
 
 	clt.IncreateNFTSBought()
 	nft.SetOwner(caller)
+	nft.SetBought()
 	banker.SendCoins(realmAddr, clt.GetOwner(), std.Coins{coinSent[0]})
 }
 
