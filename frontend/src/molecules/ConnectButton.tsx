@@ -4,19 +4,12 @@ import { AdenaService } from "../services/adena/adena";
 import { IAccountInfo } from "../services/adena/adena.types";
 import { constants } from "../constants";
 import { useAccountStore } from "../store";
-import { displayBalance } from "../utils";
+import { displayUgnot } from "../utils";
 
 const WalletButton: FC = () => {
   const toast = useToast();
-  const { setChainID, setAddress } = useAccountStore();
+  const { setAddress, setAccountInfo, accountInfo } = useAccountStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const [accountInfo, setAccountInfo] = useState<IAccountInfo | null>(null);
-
-  const fetchBalance = async () => {
-    const accountInfo = await AdenaService.getAccountInfo();
-    setAccountInfo(accountInfo);
-  };
 
   const ugnots = useMemo<number>(() => {
     if (!accountInfo) return 0;
@@ -28,7 +21,7 @@ const WalletButton: FC = () => {
 
     try {
       // Attempt to establish a connection
-      await AdenaService.establishConnection("meme.land");
+      await AdenaService.establishConnection("openocean");
 
       // Get the account info
       const info: IAccountInfo = await AdenaService.getAccountInfo();
@@ -38,16 +31,14 @@ const WalletButton: FC = () => {
 
       // Update the account context
       setAddress(info.address);
-      setChainID(constants.chainID);
-
-      await fetchBalance();
+      setAccountInfo(info);
 
       toast({
         colorScheme: "purple",
         title: "Connected to Adena",
         description: `Connected to ${info.address}`,
         status: "success",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     } catch (e) {
@@ -64,8 +55,10 @@ const WalletButton: FC = () => {
 
     setIsLoading(false);
   };
+
   return (
     <HStack
+      onClick={handleWalletConnect}
       borderRadius="16px"
       border="1px solid gray"
       px="12px"
@@ -73,11 +66,10 @@ const WalletButton: FC = () => {
       transition="1s"
       divider={<StackDivider />}
     >
-      {!!accountInfo && <Text>{displayBalance(ugnots)}</Text>}
+      {!!accountInfo && <Text>{displayUgnot(ugnots)}</Text>}
       <Button
         _hover={{ color: "purple.100" }}
         color="purple.200"
-        onClick={handleWalletConnect}
         isLoading={isLoading}
         isDisabled={!!accountInfo}
       >{`{ wallet }`}</Button>

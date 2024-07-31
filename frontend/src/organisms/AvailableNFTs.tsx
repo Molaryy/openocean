@@ -34,7 +34,7 @@ const AvailableNFTs: FC = () => {
             px="24px"
             flexShrink={0}
           >
-            <NFTCard url={nft?.metadata?.ipfsUrl} />
+            <NFTCard url={nft?.metadata?.cid} />
           </Box>
         ))}
       </motion.div>

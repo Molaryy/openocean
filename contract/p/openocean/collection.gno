@@ -17,6 +17,7 @@ type Collection struct {
 	avaiableTokens int
 	nftsBought int
 	nfts *avl.Tree
+	stars *avl.Tree
 }
 
 
@@ -164,6 +165,10 @@ func (c *Collection) GetAvaiableTokens() int {
 	return c.avaiableTokens
 }
 
+func (c *Collection) GetStars() *avl.Tree {
+	return c.stars
+}
+
 func (c *Collection) getAvailableNFT() (*NFTtoken721, bool) {
 	var nft *NFTtoken721
 	var found bool = false
@@ -226,6 +231,30 @@ func GetCollectionByID(clts *avl.Tree, idToFind string) (*Collection, bool) {
 	}
 	return value.(*Collection), true
 }
+
+func (c *Collection) IsStarred() bool {
+	addr := std.GetOrigCaller()
+	_, exists := c.stars.Get(addr.String())
+	return exists
+}
+
+func (c *Collection) Star() bool {
+	addr := std.GetOrigCaller()
+	if c.IsStarred() == true {
+		return false
+	}
+	c.stars.Set(addr.String(), true)
+	return true;
+}
+
+func (c *Collection) Unstar() bool {
+	addr := std.GetOrigCaller()
+	if c.IsStarred() == false {
+		return false
+	}
+	c.stars.Remove(addr.String())
+	return true
+}
  
 func CreateCollection(
 	collectionId int,
@@ -238,6 +267,7 @@ func CreateCollection(
 	avaiableTokens int,
 ) (*Collection, error) {
 	var nfts *avl.Tree = avl.NewTree()
+	var stars *avl.Tree = avl.NewTree()
 
 	if addrOwner.IsValid() == false {
 		return nil, errors.New("Invalid owner address")
@@ -262,6 +292,8 @@ func CreateCollection(
 		logo: logo,
 		avaiableTokens: avaiableTokens,
 		nfts: nfts,
+		stars: stars,
 	}
+	clt.Star()
 	return clt, nil
 }

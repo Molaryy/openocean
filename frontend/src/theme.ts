@@ -1,5 +1,20 @@
 import { defineStyleConfig, extendTheme } from "@chakra-ui/react";
 
+export const colors = {
+  gray: {
+    50: "#f7fafc",
+    100: "#edf2f7",
+    200: "#e2e8f0",
+    300: "#cbd5e0",
+    400: "#a0aec0",
+    500: "#718096",
+    600: "#4a5568",
+    700: "#2d3748",
+    800: "#1a202c",
+    900: "#171923",
+  },
+};
+
 const Button = defineStyleConfig({
   baseStyle: {
     fontWeight: "bold",
@@ -22,18 +37,14 @@ const Button = defineStyleConfig({
   },
 });
 
-export const colors = {
-  gray: {
-    50: "#f7fafc",
-    100: "#edf2f7",
-    200: "#e2e8f0",
-    300: "#cbd5e0",
-    400: "#a0aec0",
-    500: "#718096",
-    600: "#4a5568",
-    700: "#2d3748",
-    800: "#1a202c",
-    900: "#171923",
+const Card = {
+  parts: ["container"],
+  baseStyle: {
+    container: {
+      border: `1px solid ${colors.gray[700]}`,
+      boxShadow: "lg",
+      bg: "gray.800",
+    },
   },
 };
 
@@ -67,6 +78,7 @@ const theme = extendTheme({
       },
     },
     Button,
+    Card,
   },
 });
 

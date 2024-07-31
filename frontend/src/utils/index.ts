@@ -1,8 +1,10 @@
 import { constants } from "../constants";
 
-export const displayBalance = (ugnot: number) => {
-  const gnot = ugnot / 1000000;
-  return displayGnot(gnot);
+export const displayUgnot = (ugnot: number) => {
+  return `${ugnot.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  })} ugnot`;
 };
 
 export const displayGnot = (gnot: number) => {

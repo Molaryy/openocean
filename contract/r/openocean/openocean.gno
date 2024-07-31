@@ -62,10 +62,8 @@ func AddCollection(
 	collectionCounter++
 }
 
-
 func GetCollections() string {
 	cltsJson := json.ArrayNode("", []*json.Node{})
-
 
 	collections.Iterate("", "", func (id string, value interface{}) bool {
 		ufmt.Println("Collection ID: ", id)
@@ -81,6 +79,8 @@ func GetCollections() string {
 			"logo": json.StringNode("logo", clt.GetLogo()),
 			"owner": json.StringNode("owner", clt.GetOwner().String()),
 			"description": json.StringNode("description", clt.GetDescription()),
+			"volume": json.NumberNode("volume", float64(clt.GetAvaiableTokens())),
+			"sales": json.NumberNode("sales", float64(clt.GetNFTSBought())),
 		})
 		nfts.Iterate("", "", func (id string, valueNft interface{}) bool {
 			nft := valueNft.(* openocean.NFTtoken721)
@@ -103,6 +103,13 @@ func GetCollections() string {
 			return false
 		})
 		cltField.AppendObject("nfts", nftsJson)
+		starsJson := json.ArrayNode("", []*json.Node{})
+		stars := clt.GetStars()
+		stars.Iterate("", "", func (id string, value interface{}) bool {
+			starsJson.AppendArray(json.StringNode("", id))
+			return false
+		})
+		cltField.AppendObject("stars", starsJson)
 		cltsJson.AppendArray(cltField)
 		return false
 	})
@@ -168,7 +175,6 @@ func GetCollectionStats(collectionID string) string {
 		panic(errors.New("Couldn't find collection: " + collectionID))
 	}
 
-	nfts := clt.GetNFTS()
 	collectionJSON := json.ObjectNode("", map[string]*json.Node{
 		"id": json.StringNode("id", clt.GetId()),
 		"name": json.StringNode("name", clt.GetName()),
@@ -177,17 +183,25 @@ func GetCollectionStats(collectionID string) string {
 		"sales": json.StringNode("sales", ufmt.Sprintf("%d", clt.GetNFTSBought())),
 	})
 
+	nftsJson := json.ArrayNode("", []*json.Node{})
+	nfts := clt.GetNFTS()
 	nfts.Iterate("", "", func (id string, value interface{}) bool {
 		nft := value.(* openocean.NFTtoken721)
+
+		if nft.IsMinted() == false {
+			return false
+		}
+
 		nftJSON := json.ObjectNode("", map[string]*json.Node{
 			"id": json.StringNode("id", nft.GetId()),
 			"name": json.StringNode("name", nft.GetName()),
 			"metadata": json.StringNode("metadata", nft.GetMetadata()),
 			"price": json.StringNode("price", ufmt.Sprintf("%d", nft.GetPrice())),
 		})
-		collectionJSON.AppendObject(nft.GetId(), nftJSON)
+		nftsJson.AppendArray(nftJSON)
 		return false
 	})
+	collectionJSON.AppendObject("nfts", nftsJson)
 
 	encoded, err := json.Marshal(collectionJSON)
 
@@ -195,6 +209,18 @@ func GetCollectionStats(collectionID string) string {
 		panic(err)
 	}
 	return string(encoded)
+}
+
+func StarCollection(collectionID string, starred string) {
+	clt, ok := openocean.GetCollectionByID(collections, collectionID)
+	if ok == false {
+		panic(errors.New("Couldn't find collection: " + collectionID))
+	}
+	if starred == "true" {
+		clt.Star()
+	} else if starred == "false" {
+		clt.Unstar()
+	}
 }
 
 func Render(path string) string {

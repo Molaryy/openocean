@@ -1,19 +1,20 @@
 import { GnoJSONRPCProvider } from "@gnolang/gno-js-client";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { IAccountInfo } from "../services/adena/adena.types";
 
 const useAccountStore = create<{
   address: string | null;
-  chainID: string | null;
+  accountInfo: IAccountInfo | null;
   setAddress: (address: string) => void;
-  setChainID: (chainID: string) => void;
+  setAccountInfo: (info: IAccountInfo) => void;
 }>()(
   persist(
     (set) => ({
       address: null,
-      chainID: null,
+      accountInfo: null,
       setAddress: (address: string) => set({ address }),
-      setChainID: (chainID: string) => set({ chainID }),
+      setAccountInfo: (accountInfo: IAccountInfo) => set({ accountInfo }),
     }),
     {
       name: "account-storage",
