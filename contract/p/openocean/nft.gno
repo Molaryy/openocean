@@ -92,5 +92,6 @@ func InitToken(
 		owner: addrOwner,
 		metadata: "",
 		isMinted: false,
+		price: 0,
 	}, nil
 }

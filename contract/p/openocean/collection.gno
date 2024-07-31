@@ -188,15 +188,13 @@ func (c *Collection) Mint(
 	price int64,
 ) bool {
 	if c.avaiableTokens <= 0 {
-		ufmt.Println("Collection hasn`t any available tokens")
-		return false
+		panic(errors.New("Collection hasn`t any available tokens"))
 	}
 	c.avaiableTokens -= 1
 	nft, found := c.getAvailableNFT()
 
 	if found == false {
-		ufmt.Println("There are no more available nfts")
-		return false
+		panic(errors.New("There are no more available nfts"))
 	}
 	nft.Mint(name, cid, description, owner, price)
 	return true

@@ -40,7 +40,7 @@ func AddCollection(
 	realmAddr := std.CurrentRealm().Addr()
 
 	if coinSent.AmountOf("ugnot") < 5 {
-		panic(errors.New("You don't have enough founds yo create a collection, it costs 5 ugnots and you have " + string(coinSent.AmountOf("ugnot")) + " ugnots"))
+		panic(errors.New("You don't have enough founds yo create a collection, it costs 5 ugnots and you have " + ufmt.Sprintf("%d", coinSent.AmountOf("ugnot")) + " ugnots"))
 	}
 	clt, err := openocean.CreateCollection(
 		collectionCounter,
@@ -88,6 +88,7 @@ func GetCollections() string {
 				"id": json.StringNode("id", nft.GetId()),
 				"owner": json.StringNode("owner", nft.GetOwner().String()),
 				"isMinted": json.BoolNode("isMinted", nft.IsMinted()),
+				"price": json.StringNode("price", ufmt.Sprintf("%d", nft.GetPrice())),
 			})
 			cltField.AppendObject(nft.GetId(), nftField)
 			metadata := nft.GetMetadata()
@@ -172,8 +173,8 @@ func GetCollectionStats(collectionID string) string {
 		"id": json.StringNode("id", clt.GetId()),
 		"name": json.StringNode("name", clt.GetName()),
 		"logo": json.StringNode("logo", clt.GetLogo()),
-		"volume": json.StringNode("volume", string(clt.GetAvaiableTokens())),
-		"sales": json.StringNode("sales", string(clt.GetNFTSBought())),
+		"volume": json.StringNode("volume", ufmt.Sprintf("%d", clt.GetAvaiableTokens())),
+		"sales": json.StringNode("sales", ufmt.Sprintf("%d", clt.GetNFTSBought())),
 	})
 
 	nfts.Iterate("", "", func (id string, value interface{}) bool {
@@ -182,7 +183,7 @@ func GetCollectionStats(collectionID string) string {
 			"id": json.StringNode("id", nft.GetId()),
 			"name": json.StringNode("name", nft.GetName()),
 			"metadata": json.StringNode("metadata", nft.GetMetadata()),
-			"price": json.StringNode("price", string(nft.GetPrice())),
+			"price": json.StringNode("price", ufmt.Sprintf("%d", nft.GetPrice())),
 		})
 		collectionJSON.AppendObject(nft.GetId(), nftJSON)
 		return false
