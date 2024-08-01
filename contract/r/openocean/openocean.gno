@@ -159,9 +159,9 @@ func BuyNFT(collectionID string, nftID string) {
 	if nft.GetOwner() == caller {
 		panic(errors.New("You already have this nft: " + nftID))
 	}
-	if nft.IsBought() == true {
+	if nft.IsForSale() == true {
 		if nft.GetOwner() == caller {
-			panic(errors.New("You already bought this nft: " + nftID))
+			panic(errors.New("You already bought this NFT: " + nftID))
 		} else {
 			panic(errors.New("Someone else already bought this nft: " + nftID))
 		}
@@ -172,8 +172,31 @@ func BuyNFT(collectionID string, nftID string) {
 
 	clt.IncreateNFTSBought()
 	nft.SetOwner(caller)
-	nft.SetBought()
+	nft.SetForSale(false)
 	banker.SendCoins(realmAddr, clt.GetOwner(), std.Coins{coinSent[0]})
+}
+
+func SetNFTForSale(collectionID string, nftID string, sellingState bool) {
+	caller := std.GetOrigCaller()
+	clt, ok := openocean.GetCollectionByID(collections, collectionID)
+
+	if ok == false {
+		panic(errors.New("Couldn't find collection: " + collectionID))
+	}
+
+	nft, ok := clt.GetNFTByID(nftID)
+
+	if ok == false {
+		panic(errors.New("Couldn't find nft:" + nftID + " in collection: " + collectionID))
+	}
+
+	if nft.GetOwner() != caller {
+		panic(errors.New("You can't set the sell state of an NFT if you are not the owner!"))
+	}
+	if nft.IsForSale() == sellingState {
+		panic(errors.New("This NFT is already has the selling state that you are trying to set"))
+	}
+	nft.SetForSale(sellingState)
 }
 
 func GetCollectionStats(collectionID string) string {

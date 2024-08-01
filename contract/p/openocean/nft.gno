@@ -13,7 +13,7 @@ type NFTtoken721 struct {
 	owner std.Address
 	metadata string
 	isMinted bool
-	isBought bool
+	isForSale bool
 	price int64
 }
 
@@ -37,12 +37,12 @@ func (n *NFTtoken721) GetPrice() int64 {
 	return n.price
 }
 
-func (n *NFTtoken721) SetBought() {
-	n.isBought = true
+func (n *NFTtoken721) SetForSale(state bool) {
+	n.isForSale = state
 }
 
-func (n *NFTtoken721) IsBought() bool {
-	return n.isBought
+func (n *NFTtoken721) IsForSale() bool {
+	return n.isForSale
 }
 
 func (n *NFTtoken721) SetOwner(owner std.Address) bool {
@@ -101,7 +101,7 @@ func InitToken(
 		owner: addrOwner,
 		metadata: "",
 		isMinted: false,
-		isBought: false,
+		isForSale: false,
 		price: 0,
 	}, nil
 }
