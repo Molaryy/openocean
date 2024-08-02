@@ -85,7 +85,8 @@ const CreateCollection: FC = () => {
               });
               navigate("/");
             },
-            onError: () => {
+            onError: (e) => {
+              console.error(e);
               toast({
                 colorScheme: "red",
                 title: "Error",
@@ -98,7 +99,8 @@ const CreateCollection: FC = () => {
           }
         );
       },
-      onError: () => {
+      onError: (e) => {
+        console.error(e);
         toast({
           colorScheme: "red",
           title: "Error",

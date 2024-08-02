@@ -89,6 +89,8 @@ func GetCollections() string {
 				"owner": json.StringNode("owner", nft.GetOwner().String()),
 				"isMinted": json.BoolNode("isMinted", nft.IsMinted()),
 				"price": json.NumberNode("price", float64(nft.GetPrice())),
+				"isForSale": json.BoolNode("isForSale", nft.IsForSale()),
+				"collectionId": json.StringNode("collectionId", clt.GetId()),
 			})
 			cltField.AppendObject(nft.GetId(), nftField)
 			metadata := nft.GetMetadata()
@@ -162,6 +164,7 @@ func BuyNFT(collectionID string, nftID string) {
 	if nft.IsForSale() == false {
 		panic(errors.New("The nft: " + nftID + " is not for sale"))
 	}
+	ufmt.Println("NFT: ", nftID, " price: ", nft.GetPrice(), " versus: ", coinSent.AmountOf("ugnot"))
 	if nft.GetPrice() > coinSent.AmountOf("ugnot") {
 		panic(errors.New("You don't have enough ugnots to buy the nft: " + nftID))
 	}
