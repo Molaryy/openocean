@@ -159,12 +159,8 @@ func BuyNFT(collectionID string, nftID string) {
 	if nft.GetOwner() == caller {
 		panic(errors.New("You already have this nft: " + nftID))
 	}
-	if nft.IsForSale() == true {
-		if nft.GetOwner() == caller {
-			panic(errors.New("You already bought this NFT: " + nftID))
-		} else {
-			panic(errors.New("Someone else already bought this nft: " + nftID))
-		}
+	if nft.IsForSale() == false {
+		panic(errors.New("The nft: " + nftID + " is not for sale"))
 	}
 	if nft.GetPrice() > coinSent.AmountOf("ugnot") {
 		panic(errors.New("You don't have enough ugnots to buy the nft: " + nftID))
