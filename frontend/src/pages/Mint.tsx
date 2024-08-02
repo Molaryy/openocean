@@ -16,7 +16,7 @@ import {
   chakra,
   useToast,
 } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import SingleUploadImage from "../molecules/SingleUploadImage";
 import { colors } from "../theme";
 import { GiGoldBar } from "react-icons/gi";
@@ -26,6 +26,7 @@ import useMint from "../hooks/useMint";
 import usePinFileToIPFS from "../hooks/usePinFileToIPFS";
 import useGetAllCollections from "../hooks/useGetAllCollections";
 import { urlFromIpfsHash } from "../utils";
+import { useAccountStore } from "../store";
 
 interface MintForm {
   name: string;
@@ -36,7 +37,14 @@ interface MintForm {
 }
 
 const MintPage: FC = () => {
+  const { address } = useAccountStore();
+
   const { data: collections } = useGetAllCollections();
+
+  const myCollections = useMemo(
+    () => collections?.filter((c) => c.owner === address),
+    [address, collections]
+  );
 
   const {
     handleSubmit,
@@ -169,19 +177,19 @@ const MintPage: FC = () => {
                         boxShadow="lg"
                         border={`1px solid ${colors.gray[700]}`}
                       >
-                        {collections?.map((collection) => (
+                        {myCollections?.map((collection) => (
                           <option key={collection.id} value={collection.id}>
                             {collection.name}
                           </option>
                         ))}
                       </Select>
-                      {!!collections?.find((c) => c.id === field.value) && (
+                      {!!myCollections?.find((c) => c.id === field.value) && (
                         <Box w="50px">
                           <Image
                             borderRadius="8px"
                             h="40px"
                             src={urlFromIpfsHash(
-                              collections?.find((c) => c.id === field.value)
+                              myCollections?.find((c) => c.id === field.value)
                                 ?.logo ?? ""
                             )}
                           />
