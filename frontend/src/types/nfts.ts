@@ -11,6 +11,8 @@ export type Nft = {
   isMinted: boolean;
   metadata?: NftMetadata;
   price: number;
+  isForSale: boolean;
+  collectionId: string;
 };
 
 export type MintDto = {
@@ -19,4 +21,15 @@ export type MintDto = {
   cid: string;
   description: string;
   price: number;
+};
+
+export type BuyNFTDto = {
+  collectionId: string;
+  nftId: string;
+};
+
+export type SetNFTForSaleDto = {
+  collectionId: string;
+  nftId: string;
+  sellingState: boolean;
 };

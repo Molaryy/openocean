@@ -1,13 +1,27 @@
-import { Divider, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import {
+  Center,
+  Divider,
+  HStack,
+  Icon,
+  Text,
+  Tooltip,
+  VStack,
+} from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { displayUgnot } from "../utils";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+import { FaCheck } from "react-icons/fa";
+import { FaX } from "react-icons/fa6";
+import { Nft } from "../types/nfts";
+import { useAccountStore } from "../store";
+import { PiWarningBold } from "react-icons/pi";
 
-const NFTDetails: FC<{ owner: string; description: string; price: number }> = ({
-  owner,
-  description,
-  price,
-}) => {
+interface NFTDetailsProps {
+  nft: Nft;
+}
+const NFTDetails: FC<NFTDetailsProps> = ({ nft }) => {
+  const { balance } = useAccountStore();
+
   const [showMore, setShowMore] = useState<boolean>(false);
 
   return (
@@ -19,7 +33,7 @@ const NFTDetails: FC<{ owner: string; description: string; price: number }> = ({
           color="gray.500"
           textAlign="justify"
         >
-          {description}
+          {nft.metadata?.description}
         </Text>
         <Icon
           cursor="pointer"
@@ -33,13 +47,29 @@ const NFTDetails: FC<{ owner: string; description: string; price: number }> = ({
         <Text fontWeight="bold" color="gray.500">
           Owner
         </Text>
-        <Text>{owner}</Text>
+        <Text>{nft.owner}</Text>
       </HStack>
       <HStack justify="space-between" w="100%">
         <Text fontWeight="bold" color="gray.500">
           Price
         </Text>
-        <Text>{displayUgnot(price)}</Text>
+        <Text>{displayUgnot(nft.price)}</Text>
+        {balance <= nft.price && (
+          <Tooltip label="You have an insufficient balance to buy this NFT">
+            <Center>
+              <Icon color="red.800" as={PiWarningBold} />
+            </Center>
+          </Tooltip>
+        )}
+      </HStack>
+      <HStack justify="space-between" w="100%">
+        <Text fontWeight="bold" color="gray.500">
+          For sale
+        </Text>
+        <Icon
+          color={nft.isForSale ? "green.500" : "red.800"}
+          as={nft.isForSale ? FaCheck : FaX}
+        />
       </HStack>
     </>
   );

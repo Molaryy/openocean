@@ -85,6 +85,7 @@ func (n *NFTtoken721) Mint(
 	n.owner = owner
 	n.name = name
 	n.price = price
+	n.isForSale = true
 	return true
 }
 
@@ -101,7 +102,7 @@ func InitToken(
 		owner: addrOwner,
 		metadata: "",
 		isMinted: false,
-		isForSale: false,
+		isForSale: true,
 		price: 0,
 	}, nil
 }

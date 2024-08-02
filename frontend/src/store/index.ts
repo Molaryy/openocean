@@ -5,16 +5,20 @@ import { IAccountInfo } from "../services/adena/adena.types";
 
 const useAccountStore = create<{
   address: string | null;
+  balance: number;
   accountInfo: IAccountInfo | null;
   setAddress: (address: string) => void;
   setAccountInfo: (info: IAccountInfo) => void;
+  setBalance: (balance: number) => void;
 }>()(
   persist(
     (set) => ({
       address: null,
       accountInfo: null,
+      balance: 0,
       setAddress: (address: string) => set({ address }),
       setAccountInfo: (accountInfo: IAccountInfo) => set({ accountInfo }),
+      setBalance: (balance: number) => set({ balance }),
     }),
     {
       name: "account-storage",

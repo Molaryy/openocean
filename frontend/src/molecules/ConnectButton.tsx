@@ -1,5 +1,5 @@
 import { HStack, StackDivider, Button, useToast, Text } from "@chakra-ui/react";
-import { FC, useMemo, useState } from "react";
+import { FC, useState } from "react";
 import { AdenaService } from "../services/adena/adena";
 import { IAccountInfo } from "../services/adena/adena.types";
 import { constants } from "../constants";
@@ -8,13 +8,9 @@ import { displayUgnot } from "../utils";
 
 const WalletButton: FC = () => {
   const toast = useToast();
-  const { setAddress, setAccountInfo, accountInfo } = useAccountStore();
+  const { setAddress, setAccountInfo, accountInfo, balance, setBalance } =
+    useAccountStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const ugnots = useMemo<number>(() => {
-    if (!accountInfo) return 0;
-    return +accountInfo.coins.split("u")[0];
-  }, [accountInfo]);
 
   const handleWalletConnect = async () => {
     setIsLoading(true);
@@ -32,6 +28,7 @@ const WalletButton: FC = () => {
       // Update the account context
       setAddress(info.address);
       setAccountInfo(info);
+      setBalance(+info.coins.split("u")[0]);
 
       toast({
         colorScheme: "purple",
@@ -66,7 +63,7 @@ const WalletButton: FC = () => {
       transition="1s"
       divider={<StackDivider />}
     >
-      {!!accountInfo && <Text>{displayUgnot(ugnots)}</Text>}
+      {!!accountInfo && <Text>{displayUgnot(balance)}</Text>}
       <Button
         _hover={{ color: "purple.100" }}
         color="purple.200"
