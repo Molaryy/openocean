@@ -81,10 +81,11 @@ func TestMintNft(t *testing.T) {
 			t.Fatalf("expected false, got true")
 		}
 
-		nft.Mint("Pablo", "test", "hey everyone", nwAdr)
+		nft.Mint("Pablo", "test", "hey everyone", nwAdr, 25)
 		expectedIsMinted := true
 		expectedOwner := nwAdr
 		expectedName := "Pablo"
+		var expectedPrice int64 = 25
 		expectedMetadata := json.ObjectNode("", map[string]*json.Node{
 			"owner": json.StringNode("owner", nwAdr.String()),
 			"name": json.StringNode("name", "Pablo"),
@@ -95,13 +96,17 @@ func TestMintNft(t *testing.T) {
 		if expectedIsMinted != nft.IsMinted() {
 			t.Fatalf("expected true, got false")
 		}
-		
+
 		if expectedOwner != nft.GetOwner() {
 			t.Fatalf("expected %s, got %s", expectedOwner.String(), nft.GetOwner().String())
 		}
 
 		if expectedName != nft.GetName() {
 			t.Fatalf("expected %s, got %s", expectedName, nft.GetName())
+		}
+
+		if expectedPrice != nft.GetPrice() {
+			t.Fatalf("expected %d, got %d", expectedPrice, nft.GetPrice())
 		}
 
 		encodedExpectedMetadata, err := json.Marshal(expectedMetadata)
