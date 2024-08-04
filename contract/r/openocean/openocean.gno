@@ -9,6 +9,7 @@ import (
 	"gno.land/p/demo/json"
 )
 
+// change to another address
 const (
 	openoceanAdr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 )
@@ -42,6 +43,7 @@ func AddCollection(
 	if coinSent.AmountOf("ugnot") < 5 {
 		panic(errors.New("You don't have enough founds to create a collection, it costs 5 ugnots and you have " + string(coinSent.AmountOf("ugnot")) + " ugnots"))
 	}
+
 	clt, err := openocean.CreateCollection(
 		collectionCounter,
 		&nftID,
@@ -52,9 +54,11 @@ func AddCollection(
 		logo,
 		avaiableNfts,
 	)
+
 	if clt == nil || err != nil {
 		panic(err)
 	}
+
 	banker.SendCoins(realmAddr, openoceanAdr, std.Coins{coinSent[0]})
 	id := clt.GetId()
     collections.Set(id, clt)
@@ -68,9 +72,11 @@ func GetCollections() string {
 	collections.Iterate("", "", func (id string, value interface{}) bool {
 		ufmt.Println("Collection ID: ", id)
 		clt := value.(*openocean.Collection)
+
 		if clt == nil {
 			return true
 		}
+
 		nfts := clt.GetNFTS()
 		nftsJson := json.ArrayNode("", []*json.Node{})
 		cltField := json.ObjectNode("", map[string]*json.Node{
@@ -94,6 +100,7 @@ func GetCollections() string {
 			})
 			cltField.AppendObject(nft.GetId(), nftField)
 			metadata := nft.GetMetadata()
+
 			if metadata != "" {
 				metadataJson, err := json.Unmarshal([]byte(metadata))
 				if err != nil {
@@ -101,16 +108,19 @@ func GetCollections() string {
 				}
 				nftField.AppendObject("metadata", metadataJson)
 			}
+
 			nftsJson.AppendArray(nftField)
 			return false
 		})
 		cltField.AppendObject("nfts", nftsJson)
 		starsJson := json.ArrayNode("", []*json.Node{})
 		stars := clt.GetStars()
+
 		stars.Iterate("", "", func (id string, value interface{}) bool {
 			starsJson.AppendArray(json.StringNode("", id))
 			return false
 		})
+
 		cltField.AppendObject("stars", starsJson)
 		cltsJson.AppendArray(cltField)
 		return false
@@ -120,6 +130,7 @@ func GetCollections() string {
 	if err != nil {
 		panic(err)
 	}
+
 	return string(encoded)
 }
 
@@ -136,9 +147,11 @@ func MintInCollectionById(
 	if ok == false {
 		panic(errors.New("Couldn't find collection: " + collectionID))
 	}
+
 	if caller != clt.GetOwner() {
 		panic(errors.New("You are not the owner of the collection"))
 	}
+
 	return clt.Mint(nftName, cid, description, caller, price)
 }
 
@@ -158,13 +171,17 @@ func BuyNFT(collectionID string, nftID string) {
 	if ok == false {
 		panic(errors.New("Couldn't find an nft with this iD"))
 	}
+
 	if nft.GetOwner() == caller {
 		panic(errors.New("You already have this nft: " + nftID))
 	}
+
 	if nft.IsForSale() == false {
 		panic(errors.New("The nft: " + nftID + " is not for sale"))
 	}
+
 	ufmt.Println("NFT: ", nftID, " price: ", nft.GetPrice(), " versus: ", coinSent.AmountOf("ugnot"))
+
 	if nft.GetPrice() > coinSent.AmountOf("ugnot") {
 		panic(errors.New("You don't have enough ugnots to buy the nft: " + nftID))
 	}
@@ -192,9 +209,11 @@ func SetNFTForSale(collectionID string, nftID string, sellingState bool) {
 	if nft.GetOwner() != caller {
 		panic(errors.New("You can't set the sell state of an NFT if you are not the owner!"))
 	}
+
 	if nft.IsForSale() == sellingState {
 		panic(errors.New("This NFT is already has the selling state that you are trying to set"))
 	}
+
 	nft.SetForSale(sellingState)
 }
 
@@ -237,14 +256,17 @@ func GetCollectionStats(collectionID string) string {
 	if err != nil {
 		panic(err)
 	}
+
 	return string(encoded)
 }
 
 func StarCollection(collectionID string, starred string) {
 	clt, ok := openocean.GetCollectionByID(collections, collectionID)
+
 	if ok == false {
 		panic(errors.New("Couldn't find collection: " + collectionID))
 	}
+
 	if starred == "true" {
 		clt.Star()
 	} else if starred == "false" {
