@@ -91,14 +91,14 @@ func GetCollections() string {
 		nfts.Iterate("", "", func (id string, valueNft interface{}) bool {
 			nft := valueNft.(* openocean.NFTtoken721)
 			nftField := json.ObjectNode("", map[string]*json.Node{
-				"id": json.StringNode("id", nft.GetId()),
+				"id": json.StringNode("id",string(nft.GetId())),
 				"owner": json.StringNode("owner", nft.GetOwner().String()),
 				"isMinted": json.BoolNode("isMinted", nft.IsMinted()),
 				"price": json.NumberNode("price", float64(nft.GetPrice())),
 				"isForSale": json.BoolNode("isForSale", nft.IsForSale()),
 				"collectionId": json.StringNode("collectionId", clt.GetId()),
 			})
-			cltField.AppendObject(nft.GetId(), nftField)
+			cltField.AppendObject(string(nft.GetId()), nftField)
 			metadata := nft.GetMetadata()
 
 			if metadata != "" {
@@ -139,7 +139,7 @@ func MintInCollectionById(
 	nftName string,
 	cid string,
 	description string,
-	price int64,
+	price uint64,
 ) bool {
 	clt, ok := openocean.GetCollectionByID(collections, collectionID)
 	caller := std.GetOrigCaller()
@@ -182,7 +182,7 @@ func BuyNFT(collectionID string, nftID string) {
 
 	ufmt.Println("NFT: ", nftID, " price: ", nft.GetPrice(), " versus: ", coinSent.AmountOf("ugnot"))
 
-	if nft.GetPrice() > coinSent.AmountOf("ugnot") {
+	if nft.GetPrice() > uint64(coinSent.AmountOf("ugnot")) {
 		panic(errors.New("You don't have enough ugnots to buy the nft: " + nftID))
 	}
 
@@ -242,7 +242,7 @@ func GetCollectionStats(collectionID string) string {
 		}
 
 		nftJSON := json.ObjectNode("", map[string]*json.Node{
-			"id": json.StringNode("id", nft.GetId()),
+			"id": json.StringNode("id", string(nft.GetId())),
 			"name": json.StringNode("name", nft.GetName()),
 			"price": json.NumberNode("price", float64(nft.GetPrice())),
 		})

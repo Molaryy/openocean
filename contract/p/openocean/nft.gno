@@ -5,19 +5,20 @@ import (
 	"errors"
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/demo/json"
+	"gno.land/p/demo/grc/grc721"
 )
 
 type NFTtoken721 struct {
-	id string
+	id grc721.TokenID
 	name string
 	owner std.Address
 	metadata string
 	isMinted bool
 	isForSale bool
-	price int64
+	price uint64
 }
 
-func (n *NFTtoken721) GetId() string {
+func (n *NFTtoken721) GetId() grc721.TokenID {
 	return n.id
 }
 
@@ -33,7 +34,7 @@ func (n *NFTtoken721) GetMetadata() string {
 	return n.metadata
 }
 
-func (n *NFTtoken721) GetPrice() int64 {
+func (n *NFTtoken721) GetPrice() uint64 {
 	return n.price
 }
 
@@ -62,7 +63,7 @@ func (n *NFTtoken721) Mint(
 	cid string,
 	description string,
 	owner std.Address,
-	price int64,
+	price uint64,
 ) bool {
 	if n.isMinted == true {
 		ufmt.Println("NFT: ", n.id, " has already been minted!")
@@ -91,7 +92,7 @@ func (n *NFTtoken721) Mint(
 
 func InitToken(
 	addrOwner std.Address, 
-	nftId string,
+	nftId grc721.TokenID,
 ) (*NFTtoken721, error) {
 	if addrOwner.IsValid() == false {
 		return nil, errors.New("Invalid owner address")

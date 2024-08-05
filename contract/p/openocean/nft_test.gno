@@ -30,7 +30,7 @@ func TestInitNft(t *testing.T) {
 		expectedId := "0"
 		id := initNft.GetId()
 
-		if id != expectedId {
+		if string(id) != expectedId {
 			t.Fatalf("expected %s, got %s", expectedId, id)
 		}	
 	}
@@ -85,7 +85,7 @@ func TestMintNft(t *testing.T) {
 		expectedIsMinted := true
 		expectedOwner := nwAdr
 		expectedName := "Pablo"
-		var expectedPrice int64 = 25
+		var expectedPrice uint64 = 25
 		expectedMetadata := json.ObjectNode("", map[string]*json.Node{
 			"owner": json.StringNode("owner", nwAdr.String()),
 			"name": json.StringNode("name", "Pablo"),

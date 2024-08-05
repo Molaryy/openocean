@@ -5,6 +5,7 @@ import (
 	"errors"
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
+	"gno.land/p/demo/grc/grc721"
 )
 
 type Collection struct {
@@ -190,18 +191,16 @@ func (c *Collection) Mint(
 	cid string,
 	description string,
 	owner std.Address,
-	price int64,
+	price uint64,
 ) bool {
 	if c.avaiableTokens <= 0 {
-		ufmt.Println("Collection hasn`t any available tokens")
-		return false
+		panic(errors.New("Collection hasn`t any available tokens"))
 	}
 	c.avaiableTokens -= 1
 	nft, found := c.getAvailableNFT()
 
 	if found == false {
-		ufmt.Println("There are no more available nfts")
-		return false
+		panic(errors.New("There are no more available nfts"))
 	}
 	nft.Mint(name, cid, description, owner, price)
 	return true
@@ -214,7 +213,7 @@ func (c *Collection) GetNFTByID(nftID string) (*NFTtoken721, bool)  {
 	c.nfts.Iterate("", "", func (id string, i interface{}) bool {
 		n := i.(*NFTtoken721)
 
-		if n.GetId() == nftID {
+		if n.GetId() == grc721.TokenID(nftID) {
 			nft = n
 			found = true
 			return true
@@ -274,14 +273,13 @@ func CreateCollection(
 	if addrOwner.IsValid() == false {
 		return nil, errors.New("Invalid owner address")
 	}
-	ufmt.Println("Available tokens: ", avaiableTokens)
 	for i := 0; i < avaiableTokens; i += 1 {
 		idStr := ufmt.Sprintf("%d", *nftID)
-		tkn, err := InitToken(addrOwner, idStr)
+		tkn, err := InitToken(addrOwner, grc721.TokenID(idStr))
 		if err != nil {
 			panic(err)
 		}
-		nfts.Set(tkn.GetId(), tkn)
+		nfts.Set(string(tkn.GetId()), tkn)
 		*nftID += 1
 	}
 	idClt := ufmt.Sprintf("%d", collectionId)
