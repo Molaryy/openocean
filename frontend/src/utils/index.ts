@@ -1,10 +1,9 @@
 import { constants } from "../constants";
 
 export const displayUgnot = (ugnot: number) => {
-  return `${ugnot.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-  })} ugnot`;
+  return ugnot >= 1000
+    ? `${Math.floor(ugnot / 1000).toLocaleString("en-US")} GNOT`
+    : `${ugnot.toLocaleString("en-US")} ugnot`;
 };
 
 export const displayGnot = (gnot: number) => {
