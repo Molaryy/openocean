@@ -8,11 +8,12 @@ import (
 	"gno.land/p/demo/json"
 )
 
+const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 
 func TestInitNft(t *testing.T) {
 	{
-		const adr std.Address = "hello world!"
-		_, err := InitToken(adr, "0")
+		const adrT std.Address = "hello world!"
+		_, err := InitToken(adrT, "0")
 		expectedErr := errors.New("Invalid owner address")
 
 		if err == nil {
@@ -20,7 +21,6 @@ func TestInitNft(t *testing.T) {
 		}
 	}
 	{
-		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 		initNft, err := InitToken(adr, "0")
 
 		if err != nil {
@@ -30,12 +30,11 @@ func TestInitNft(t *testing.T) {
 		expectedId := "0"
 		id := initNft.GetId()
 
-		if id != expectedId {
+		if string(id) != expectedId {
 			t.Fatalf("expected %s, got %s", expectedId, id)
 		}	
 	}
 	{
-		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 		initNft, err := InitToken(adr, "1")
 
 		if err != nil {
@@ -49,7 +48,6 @@ func TestInitNft(t *testing.T) {
 		}
 	}
 	{
-		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 		initNft, err := InitToken(adr, "2")
 
 		if err != nil {
@@ -66,7 +64,6 @@ func TestInitNft(t *testing.T) {
 
 func TestMintNft(t *testing.T) {
 	{
-		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 		const nwAdr std.Address = "g199esk77thuk3lhzz2ktmkgffk7d9eh7hn0kmqt"
 		nft, err := InitToken(adr, "3")
 
@@ -81,10 +78,11 @@ func TestMintNft(t *testing.T) {
 			t.Fatalf("expected false, got true")
 		}
 
-		nft.Mint("Pablo", "test", "hey everyone", nwAdr)
+		nft.Mint("Pablo", "test", "hey everyone", nwAdr, 25)
 		expectedIsMinted := true
 		expectedOwner := nwAdr
 		expectedName := "Pablo"
+		var expectedPrice uint64 = 25
 		expectedMetadata := json.ObjectNode("", map[string]*json.Node{
 			"owner": json.StringNode("owner", nwAdr.String()),
 			"name": json.StringNode("name", "Pablo"),
@@ -95,13 +93,17 @@ func TestMintNft(t *testing.T) {
 		if expectedIsMinted != nft.IsMinted() {
 			t.Fatalf("expected true, got false")
 		}
-		
+
 		if expectedOwner != nft.GetOwner() {
 			t.Fatalf("expected %s, got %s", expectedOwner.String(), nft.GetOwner().String())
 		}
 
 		if expectedName != nft.GetName() {
 			t.Fatalf("expected %s, got %s", expectedName, nft.GetName())
+		}
+
+		if expectedPrice != nft.GetPrice() {
+			t.Fatalf("expected %d, got %d", expectedPrice, nft.GetPrice())
 		}
 
 		encodedExpectedMetadata, err := json.Marshal(expectedMetadata)
@@ -119,7 +121,6 @@ func TestMintNft(t *testing.T) {
 func TestOwnerNft(t *testing.T) {
 	{
 		{
-			const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 			const nwAdr std.Address = "g199esk77thuk3lhzz2ktmkgffk7d9eh7hn0kmqt"
 			nft, err := InitToken(adr, "4")
 	
