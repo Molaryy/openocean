@@ -8,11 +8,12 @@ import (
 	"gno.land/p/demo/json"
 )
 
+const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 
 func TestInitNft(t *testing.T) {
 	{
-		const adr std.Address = "hello world!"
-		_, err := InitToken(adr, "0")
+		const adrT std.Address = "hello world!"
+		_, err := InitToken(adrT, "0")
 		expectedErr := errors.New("Invalid owner address")
 
 		if err == nil {
@@ -20,7 +21,6 @@ func TestInitNft(t *testing.T) {
 		}
 	}
 	{
-		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 		initNft, err := InitToken(adr, "0")
 
 		if err != nil {
@@ -35,7 +35,6 @@ func TestInitNft(t *testing.T) {
 		}	
 	}
 	{
-		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 		initNft, err := InitToken(adr, "1")
 
 		if err != nil {
@@ -49,7 +48,6 @@ func TestInitNft(t *testing.T) {
 		}
 	}
 	{
-		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 		initNft, err := InitToken(adr, "2")
 
 		if err != nil {
@@ -66,7 +64,6 @@ func TestInitNft(t *testing.T) {
 
 func TestMintNft(t *testing.T) {
 	{
-		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 		const nwAdr std.Address = "g199esk77thuk3lhzz2ktmkgffk7d9eh7hn0kmqt"
 		nft, err := InitToken(adr, "3")
 
@@ -124,7 +121,6 @@ func TestMintNft(t *testing.T) {
 func TestOwnerNft(t *testing.T) {
 	{
 		{
-			const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
 			const nwAdr std.Address = "g199esk77thuk3lhzz2ktmkgffk7d9eh7hn0kmqt"
 			nft, err := InitToken(adr, "4")
 	

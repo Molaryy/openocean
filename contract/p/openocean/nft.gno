@@ -6,16 +6,18 @@ import (
 	"gno.land/p/demo/ufmt"
 	"gno.land/p/demo/json"
 	"gno.land/p/demo/grc/grc721"
+	"gno.land/p/demo/avl"
 )
 
 type NFTtoken721 struct {
-	id grc721.TokenID
-	name string
-	owner std.Address
-	metadata string
-	isMinted bool
-	isForSale bool
-	price uint64
+	id 			   grc721.TokenID
+	name 		   string
+	owner 		   std.Address
+	metadata 	   string
+	isMinted 	   bool
+	isForSale 	   bool
+	price		   uint64
+	tokenApprovals *avl.Tree
 }
 
 func (n *NFTtoken721) GetId() grc721.TokenID {
@@ -90,6 +92,51 @@ func (n *NFTtoken721) Mint(
 	return true
 }
 
+func (n *NFTtoken721) Approve(caller std.Address, to std.Address) error  {
+	if !n.isMinted {
+		return errors.New("token does not exist")
+	}
+
+	if caller != n.owner && !n.IsApprovedForAll(n.owner, caller) {
+		return errors.New("caller is not owner nor approved for all")
+	}
+	n.tokenApprovals.Set(string(n.GetId()), to)
+	return nil
+}
+
+func (n *NFTtoken721) GetApproved() (std.Address, error) {
+	var adr std.Address
+
+	if !n.isMinted {
+		return adr, errors.New("token does not exist")
+	}
+
+	approvedAddr, exists := n.tokenApprovals.Get(string(n.GetId()))
+	if !exists {
+		return adr, errors.New("no approved address for this token")
+	}
+
+	return approvedAddr.(std.Address), nil
+}
+
+func (n *NFTtoken721) SetApprovalForAll(caller std.Address, operator std.Address, _approved std.Address) error {
+	if caller != n.owner {
+		return errors.New("caller is not the owner")
+	}
+
+	n.tokenApprovals.Set(operator.String(), _approved)
+	return nil
+}
+
+func (n *NFTtoken721) IsApprovedForAll(owner std.Address, operator std.Address) bool {
+	approved, exists := n.tokenApprovals.Get(operator.String())
+
+	if !exists {
+		return false
+	}
+	return approved.(bool)
+}
+
 func InitToken(
 	addrOwner std.Address, 
 	nftId grc721.TokenID,
@@ -105,5 +152,6 @@ func InitToken(
 		isMinted: false,
 		isForSale: true,
 		price: 0,
+		tokenApprovals: nil,
 	}, nil
 }
