@@ -2,12 +2,12 @@ import { constants } from "../constants";
 
 export const displayUgnot = (ugnot: number) => {
   return ugnot >= 1000
-    ? `${Math.floor(ugnot / 1000).toLocaleString("en-US")} GNOT`
-    : `${ugnot.toLocaleString("en-US")} ugnot`;
+    ? `${Math.floor(ugnot / 1000).toLocaleString("fr-FR")} GNOT`
+    : `${ugnot.toLocaleString("fr-FR")} ugnot`;
 };
 
 export const displayGnot = (gnot: number) => {
-  return `${gnot.toLocaleString("en-US", {
+  return `${gnot.toLocaleString("fr-FR", {
     style: "currency",
     currency: "USD",
   })} GNOT`;
