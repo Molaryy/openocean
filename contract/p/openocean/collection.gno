@@ -312,6 +312,7 @@ func CreateCollection(
 		description: description,
 		logo: logo,
 		avaiableTokens: avaiableTokens,
+		nftsBought: 0,
 		nfts: nfts,
 		stars: stars,
 	}
