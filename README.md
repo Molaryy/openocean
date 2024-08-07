@@ -19,15 +19,16 @@ cd openocean
 gnodev contract
 ```
 
-Before launching the frontend don't forget co create a new .env file, for that you can copy the current example one:
+Before launching the frontend don't forget to create a new .env file, for that you can copy the current example file:
 ```sh
+cd frontend
 cp .env.dist .env
 ```
-And you will already see some default values, you will need to add a [Pinata](https://www.pinata.cloud/) API key and also a gateway.
+
+You will see some default values, you will need to add a [Pinata](https://www.pinata.cloud/) API key and also a gateway.
 
 To launch the frontend, open a new terminal and use the next commands:
 ```sh
-cd frontend
 bun install
 bun run dev
 ```
