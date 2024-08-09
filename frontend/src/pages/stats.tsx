@@ -55,7 +55,7 @@ const StatsPage: FC = () => {
           starred: !!stat.stars.find((s) => s === address),
           id: stat.id,
         }))
-        .sort((a, b) => a.sales - b.sales) ?? [],
+        .sort((a, b) => b.sales - a.sales) ?? [],
     [address, data, tabIndex]
   );
 

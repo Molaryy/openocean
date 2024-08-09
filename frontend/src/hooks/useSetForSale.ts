@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { constants } from "../constants";
-import { AdenaService } from "../services/adena/adena";
-import { EMessageType } from "../services/adena/adena.types";
 import { useAccountStore } from "../store";
 import { SetNFTForSaleDto } from "../types/nfts";
+import { EMessageType, signAndSendTransaction } from "adena-sdk-ts";
 
 const useSetForSale = () => {
   const { address } = useAccountStore();
@@ -11,7 +10,7 @@ const useSetForSale = () => {
 
   return useMutation({
     mutationFn: (payload: SetNFTForSaleDto) =>
-      AdenaService.sendTransaction(
+      signAndSendTransaction(
         [
           {
             type: EMessageType.MSG_CALL,

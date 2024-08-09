@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { constants } from "../constants";
-import { AdenaService } from "../services/adena/adena";
-import { EMessageType } from "../services/adena/adena.types";
 import { useAccountStore } from "../store";
 import { StarCollectionDto } from "../types/collections";
+import { EMessageType, signAndSendTransaction } from "adena-sdk-ts";
 
 const useStarCollection = () => {
   const { address } = useAccountStore();
@@ -11,7 +10,7 @@ const useStarCollection = () => {
 
   return useMutation({
     mutationFn: (payload: StarCollectionDto) =>
-      AdenaService.sendTransaction(
+      signAndSendTransaction(
         [
           {
             type: EMessageType.MSG_CALL,
