@@ -8,7 +8,7 @@ import (
 func TestInitCollection(t *testing.T) {
 	{
 		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
-		nftID := 0
+		var nftID uint64 = 0
 		description := "This is a planet collection"
 		clt, err := CreateCollection(
 			0,
@@ -31,7 +31,7 @@ func TestInitCollection(t *testing.T) {
 		expectedOwner := adr
 		expectedDescription := description
 		expectedLogo := "no logo"
-		expectedAvaiableTokens := 5
+		var expectedAvaiableTokens uint64 = 5
 
 		if expectedId != clt.GetId() {
 			t.Fatalf("expected %s, got %s", expectedId, clt.GetId())
@@ -63,7 +63,7 @@ func TestInitCollection(t *testing.T) {
 	}
 	{
 		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
-		nftID := 1
+		var nftID uint64 = 1
 		description := "This is a planet collection"
 		clt, err := CreateCollection(
 			0,
@@ -84,11 +84,11 @@ func TestInitCollection(t *testing.T) {
 	}
 	{
 		countOwner := 1
-		countNfts := 0
+		var countNfts uint64 = 0
 		expectedNbOfOwners := 1
-		expectedNbOfNfts := 5
+		var expectedNbOfNfts uint64 = 5
 		const adr std.Address = "g125fhetg9kc3surkxh78avppegc3997l3jr4wdf"
-		nftID := 0
+		var nftID uint64 = 0
 		description := "This is a planet collection"
 		clt, err := CreateCollection(
 			0,
