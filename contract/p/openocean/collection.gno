@@ -15,8 +15,8 @@ type Collection struct {
 	addrOwner std.Address
 	description string
 	logo string // ipfs path
-	avaiableTokens int
-	nftsBought int
+	avaiableTokens uint64
+	nftsBought uint64
 	nfts *avl.Tree
 	stars *avl.Tree
 }
@@ -179,7 +179,7 @@ func (c *Collection) IncreateNFTSBought() {
 	c.nftsBought += 1
 }
 
-func (c *Collection) GetNFTSBought() int {
+func (c *Collection) GetNFTSBought() uint64 {
 	return c.nftsBought
 }
 
@@ -195,7 +195,7 @@ func (c *Collection) GetNFTS() *avl.Tree {
 	return c.nfts
 }
 
-func (c *Collection) GetAvaiableTokens() int {
+func (c *Collection) GetAvaiableTokens() uint64 {
 	return c.avaiableTokens
 }
 
@@ -279,14 +279,14 @@ func (c *Collection) Unstar() bool {
 }
 
 func CreateCollection(
-	collectionId int,
-	nftID *int,
+	collectionId uint64,
+	nftID *uint64,
 	name string,
 	symbol string,
 	addrOwner std.Address,
 	description string,
 	logo string,
-	avaiableTokens int,
+	avaiableTokens uint64,
 ) (*Collection, error) {
 	var nfts *avl.Tree = avl.NewTree()
 	var stars *avl.Tree = avl.NewTree()
@@ -294,7 +294,7 @@ func CreateCollection(
 	if addrOwner.IsValid() == false {
 		return nil, errors.New("Invalid address")
 	}
-	for i := 0; i < avaiableTokens; i += 1 {
+	for i := uint64(0); i < avaiableTokens; i += 1 {
 		idStr := ufmt.Sprintf("%d", *nftID)
 		tkn, err := InitToken(addrOwner, grc721.TokenID(idStr))
 		if err != nil {

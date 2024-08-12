@@ -68,8 +68,7 @@ func (n *NFTtoken721) Mint(
 	price uint64,
 ) bool {
 	if n.isMinted == true {
-		ufmt.Println("NFT: ", n.id, " has already been minted!")
-		return false
+		panic(errors.New(ufmt.Sprintf("NFT: %d has already been minted!", n.id)))
 	}
 	nftJson := json.ObjectNode("", map[string]*json.Node{
 		"owner": json.StringNode("owner", owner.String()),

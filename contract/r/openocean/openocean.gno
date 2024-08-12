@@ -16,14 +16,12 @@ const (
 
 var (
 	collections *avl.Tree
-	collectionCounter int
-	nftID int
+	collectionCounter uint64
+	nftID uint64
 )
 
 func init() {
 	collections = avl.NewTree()
-	nftID = 0
-	collectionCounter = 0
 }
 
 var count int
@@ -33,7 +31,7 @@ func AddCollection(
 	symbol string,
 	description string,
 	logo string,
-	avaiableNfts int,
+	avaiableTokens uint64,
 ) {
 	caller := std.GetOrigCaller()
 	coinSent := std.GetOrigSend()
@@ -52,7 +50,7 @@ func AddCollection(
 		caller,
 		description,
 		logo,
-		avaiableNfts,
+		avaiableTokens,
 	)
 
 	if clt == nil || err != nil {
@@ -62,7 +60,6 @@ func AddCollection(
 	banker.SendCoins(realmAddr, openoceanAdr, std.Coins{coinSent[0]})
 	id := clt.GetId()
     collections.Set(id, clt)
-	ufmt.Println("Collection: (", id, ") created successfully!")
 	collectionCounter++
 }
 
@@ -70,7 +67,6 @@ func GetCollections() string {
 	cltsJson := json.ArrayNode("", []*json.Node{})
 
 	collections.Iterate("", "", func (id string, value interface{}) bool {
-		ufmt.Println("Collection ID: ", id)
 		clt := value.(*openocean.Collection)
 
 		if clt == nil {
@@ -180,7 +176,6 @@ func BuyNFT(collectionID string, nftID string) {
 		panic(errors.New("The nft: " + nftID + " is not for sale"))
 	}
 
-	ufmt.Println("NFT: ", nftID, " price: ", nft.GetPrice(), " versus: ", coinSent.AmountOf("ugnot"))
 
 	if nft.GetPrice() > uint64(coinSent.AmountOf("ugnot")) {
 		panic(errors.New("You don't have enough ugnots to buy the nft: " + nftID))
